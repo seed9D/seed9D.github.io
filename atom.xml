@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-01-23T15:57:21.000Z</updated>
+  <updated>2021-01-23T18:04:33.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一步步透視 GBDT Classifier</title>
+    <link href="https://seed9d.github.io/GBDT-Classifier-step-by-step/"/>
+    <id>https://seed9d.github.io/GBDT-Classifier-step-by-step/</id>
+    <published>2021-01-23T16:09:45.000Z</published>
+    <updated>2021-01-23T18:04:33.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;&lt;strong&gt;TL;DR&lt;/strong&gt;&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;訓練完的 GBDT 是由多棵樹組成的 function set $f_1(x), …,f_{M}(x)$&lt;ul&gt;
+&lt;li&gt;$F_M(x) = F_0(x) + \nu\sum^M_{i=1}f_i(x)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;訓練中的 GBDT，每棵新樹 $f_m(x)$ 都去擬合 target $y$ 與 $F_{m-1}(x)$ 的 $residual$，也就是 $\textit{gradient decent}$ 的方向&lt;ul&gt;
+&lt;li&gt;$F_m(x) = F_{m-1}(x) + \nu f_m(x)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;GBDT classifier 常用的 loss function 為 cross entropy&lt;/li&gt;
+&lt;li&gt;classifier $F(x)$ 輸出的是 $log(odds)$，但衡量 $residual$  跟 $probability$  有關，得將 $F(x)$ 通過 $\textit{sigmoid function }$ 獲得  probability&lt;ul&gt;
+&lt;li&gt;$p = \sigma(F(x))$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;GBDT 簡介在 &lt;a href=&quot;https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/#GBDT-%E7%B0%A1%E4%BB%8B&quot;&gt;一步步透視 GBDT Regression Tree&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;直接進入正題吧&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Machine Learning" scheme="https://seed9d.github.io/categories/Machine-Learning/"/>
+    
+    
+    <category term="ML" scheme="https://seed9d.github.io/tags/ML/"/>
+    
+  </entry>
   
   <entry>
     <title>一步步透視 GBDT Regression Tree</title>
@@ -49,8 +84,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckk9wd4do0003qie26e1x3wsd/"/>
-    <id>https://seed9d.github.io/ckk9wd4do0003qie26e1x3wsd/</id>
+    <link href="https://seed9d.github.io/ckk9zuhsn0003k0e2aler1a0b/"/>
+    <id>https://seed9d.github.io/ckk9zuhsn0003k0e2aler1a0b/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     
