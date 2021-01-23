@@ -9,7 +9,21 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/ckk9uqyt00003c2e2396x36pq/</loc>
+    <loc>https://seed9d.github.io/tags/index.html</loc>
+    
+    <lastmod>2021-01-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/categories/index.html</loc>
+    
+    <lastmod>2021-01-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/ckk9wd4do0003qie26e1x3wsd/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -17,20 +31,6 @@
   
   <url>
     <loc>https://seed9d.github.io/about/index.html</loc>
-    
-    <lastmod>2021-01-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/categories/index.html</loc>
-    
-    <lastmod>2021-01-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/tags/index.html</loc>
     
     <lastmod>2021-01-17</lastmod>
     
@@ -45,6 +45,20 @@
   </url>
 
   
+  <url>
+    <loc>https://seed9d.github.io/tags/ML/</loc>
+    <lastmod>2021-01-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
 
+  
+  <url>
+    <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
+    <lastmod>2021-01-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
   
 </urlset>
