@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>seed9D&#39;s blog</title>
+  
+  
+  <link href="https://seed9d.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://seed9d.github.io/"/>
+  <updated>2021-01-23T14:47:07.000Z</updated>
+  <id>https://seed9d.github.io/</id>
+  
+  <author>
+    <name>seed9D</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一步步透視 GBDT Regression Tree</title>
+    <link href="https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/"/>
+    <id>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</id>
+    <published>2021-01-18T05:40:03.000Z</published>
+    <updated>2021-01-23T14:47:07.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;TL;DR&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;訓練完的 GBDT 是由多棵樹組成的 function set $f_1(x), …,f_{M}(x)$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$F_M(x) = F_0(x) + \nu\sum^M_{i=1}f_i(x) $&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;訓練中的 GBDT，每棵新樹  $f_m(x)$ 都去擬合  target $y$ 與 $F_{m-1}(x)$ 的 $residual$，也就是 $\textit{gradient  decent}$  的方向 &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$F_m(x) = F_{m-1}(x) + \nu f_m(x)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/01/23/ZWgsyMOw5LoQxFz.png&quot; alt=&quot;Golf Boosting&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://seed9d.github.io/ckk9tqp3b0003j4e28bj93e54/"/>
+    <id>https://seed9d.github.io/ckk9tqp3b0003j4e28bj93e54/</id>
+    <published>2021-01-17T15:54:25.000Z</published>
+    <updated>2021-01-18T10:06:40.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt; for more info. If you get any problems when using Hexo, you can find the answer in &lt;a href=&quot;https://hexo.io/docs/troubleshooting.html&quot;&gt;troubleshooting&lt;/a&gt; or you can ask me on &lt;a href=&quot;https://github.com/hexojs/hexo/issues&quot;&gt;GitHub&lt;/a&gt;.&lt;br&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+</feed>
