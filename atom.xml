@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-01-23T18:50:13.000Z</updated>
+  <updated>2021-01-24T16:19:28.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -17,11 +17,103 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Negative Sampling 背後的數學</title>
+    <link href="https://seed9d.github.io/negative-sampling-in-word2vec/"/>
+    <id>https://seed9d.github.io/negative-sampling-in-word2vec/</id>
+    <published>2021-01-24T15:05:45.000Z</published>
+    <updated>2021-01-24T16:19:28.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;以下用 Skip-gram 為例&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/YeDgnQ9.png&quot; style=&quot;zoom: 50%;&quot; /&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hierarchical Softmax 背後的數學</title>
+    <link href="https://seed9d.github.io/hierarchical-softmax-in-word2vec/"/>
+    <id>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</id>
+    <published>2021-01-24T11:51:54.000Z</published>
+    <updated>2021-01-24T13:58:47.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;以-CBOW-為例&quot;&gt;&lt;a href=&quot;#以-CBOW-為例&quot; class=&quot;headerlink&quot; title=&quot;以 CBOW 為例&quot;&gt;&lt;/a&gt;以 CBOW 為例&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/Pbdqtx9.png&quot; style=&quot;zoom:50%;&quot; /&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>NLP Language Model</title>
+    <link href="https://seed9d.github.io/NLP-language-model/"/>
+    <id>https://seed9d.github.io/NLP-language-model/</id>
+    <published>2021-01-24T11:33:05.000Z</published>
+    <updated>2021-01-24T13:03:50.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;General-Form&quot;&gt;&lt;a href=&quot;#General-Form&quot; class=&quot;headerlink&quot; title=&quot;General Form&quot;&gt;&lt;/a&gt;General Form&lt;/h1&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;/script&gt;&lt;p&gt;展開來後 $P(w_1, w_2, w_3,…,w_T) = P(w_1)P(x_2|w_1)P(w_3|w_2, w_1)…P(w_T|w_1,…w_{T-1})$&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>word2Vec 從原理到實現</title>
+    <link href="https://seed9d.github.io/word2vec-from-theory-2-implement/"/>
+    <id>https://seed9d.github.io/word2vec-from-theory-2-implement/</id>
+    <published>2021-01-24T11:11:42.000Z</published>
+    <updated>2021-01-24T16:16:38.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;這篇是在 notion 整理的筆記大綱，只提供綱要性的說明&lt;/p&gt;
+&lt;h1 id=&quot;預備知識&quot;&gt;&lt;a href=&quot;#預備知識&quot; class=&quot;headerlink&quot; title=&quot;預備知識&quot;&gt;&lt;/a&gt;預備知識&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;language model： NLP 語言模型&lt;/p&gt;
+&lt;p&gt;參閱 &lt;a href=&quot;/NLP-language-model/&quot; title=&quot;NLP Language Model&quot;&gt;NLP Language Model&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;huffman tree&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;簡介&quot;&gt;&lt;a href=&quot;#簡介&quot; class=&quot;headerlink&quot; title=&quot;簡介&quot;&gt;&lt;/a&gt;簡介&lt;/h1&gt;&lt;h2 id=&quot;兩種網路結構&quot;&gt;&lt;a href=&quot;#兩種網路結構&quot; class=&quot;headerlink&quot; title=&quot;兩種網路結構&quot;&gt;&lt;/a&gt;兩種網路結構&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/395NfQN.png&quot; alt=&quot;CBOW and skipgram&quot; style=&quot;zoom:67%;&quot; /&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+  </entry>
+  
+  <entry>
     <title>一步步透視 GBDT Classifier</title>
     <link href="https://seed9d.github.io/GBDT-Classifier-step-by-step/"/>
     <id>https://seed9d.github.io/GBDT-Classifier-step-by-step/</id>
     <published>2021-01-23T16:09:45.000Z</published>
-    <updated>2021-01-23T18:50:13.000Z</updated>
+    <updated>2021-01-24T12:34:26.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;&lt;strong&gt;TL;DR&lt;/strong&gt;&lt;/h1&gt;&lt;ul&gt;
@@ -56,7 +148,7 @@
     <link href="https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/"/>
     <id>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</id>
     <published>2021-01-18T05:40:03.000Z</published>
-    <updated>2021-01-23T15:57:21.000Z</updated>
+    <updated>2021-01-24T12:34:10.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;TL;DR&lt;/h1&gt;&lt;ul&gt;
@@ -84,8 +176,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckka2ftle00030me24agpecpa/"/>
-    <id>https://seed9d.github.io/ckka2ftle00030me24agpecpa/</id>
+    <link href="https://seed9d.github.io/ckkb4qj5300030ce221fmb5r8/"/>
+    <id>https://seed9d.github.io/ckkb4qj5300030ce221fmb5r8/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     

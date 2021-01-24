@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Negative Sampling 背後的數學 - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="以下用 Skip-gram 為例"><meta property="og:type" content="article"><meta property="og:title" content="Negative Sampling 背後的數學"><meta property="og:url" content="https://seed9d.github.io/negative-sampling-in-word2vec/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="以下用 Skip-gram 為例"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/YeDgnQ9.png"><meta property="og:image" content="https://i.imgur.com/m2gAqLM.png"><meta property="article:published_time" content="2021-01-24T15:05:45.000Z"><meta property="article:modified_time" content="2021-01-24T16:19:28.000Z"><meta property="article:author" content="seed9D"><meta property="article:tag" content="NLP"><meta property="article:tag" content="word embedding"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/YeDgnQ9.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/negative-sampling-in-word2vec/"},"headline":"seed9D's blog","image":["https://i.imgur.com/YeDgnQ9.png","https://i.imgur.com/m2gAqLM.png"],"datePublished":"2021-01-24T15:05:45.000Z","dateModified":"2021-01-24T16:19:28.000Z","author":{"@type":"Person","name":"seed9D"},"description":"以下用 Skip-gram 為例"}</script><link rel="canonical" href="https://seed9d.github.io/negative-sampling-in-word2vec/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/">Seed 9D</a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>Negative Sampling 背後的數學</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-01-24</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-01-25</time></span><span class="level-item"><a class="link-muted" href="/categories/NLP/">NLP</a></span><span class="level-item">13 minutes read (About 1986 words)</span></div></div><div class="content"><p>以下用 Skip-gram 為例</p>
+<p><img src="https://i.imgur.com/YeDgnQ9.png" style="zoom: 50%;" /></p>
+<a id="more"></a>
+<ul>
+<li>$V$： the vocabulary size</li>
+<li>$N$ : the embedding dimension</li>
+<li>$W$： the input side matrix which is  $V \times N$<ul>
+<li>each row is the $N$ dimension vector</li>
+<li>$\text{v}_{w_i}$ is the representation of the input word $w_i$</li>
+</ul>
+</li>
+<li>$W’$: the output side matrix  which is $N \times V$<ul>
+<li>each column is the $N$ dimension vector</li>
+<li>$\text{v}^{‘}_{w_j}$ is the j-th column of the matrix $W’$ representing $w_j$</li>
+</ul>
+</li>
+</ul>
+<h2 id="Noise-Contrastive-Estimation-NCE"><a href="#Noise-Contrastive-Estimation-NCE" class="headerlink" title="Noise Contrastive Estimation (NCE)"></a>Noise Contrastive Estimation (NCE)</h2><blockquote>
+<p>NCE attempts to approximately maximize the log probability of the softmax output</p>
+</blockquote>
+<ul>
+<li>The Noise Contractive Estimation metric intends to differentiate the target word from noise sample using a logistic regression classifier</li>
+</ul>
+<p><img src="https://i.imgur.com/m2gAqLM.png" style="zoom: 50%;" /></p>
+<h3 id="從-cross-entropy-說起"><a href="#從-cross-entropy-說起" class="headerlink" title="從 cross entropy 說起"></a>從 cross entropy 說起</h3><p> True label $y_i$ is 1 only when $w_i$ is the output word:</p>
+<script type="math/tex; mode=display">
+\mathcal{L}_\theta = - \sum_{i=1}^V y_i \log p(w_i | w_I) = - \log p(w_O \vert w_I)</script><p>又</p>
+<p>$p(w_O \vert w_I) = \frac{\exp({\text{v}’_{w_O}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}’_{w_i}}^{\top} \text{v}_{w_I})}$ </p>
+<ul>
+<li>$\text{v}^{‘}_{w_i}$ is  vector of word $w_i$ in $W^{‘}$</li>
+<li>$w_O$ is the output word in $V$</li>
+<li>$w_I$ is the input word in $V$</li>
+</ul>
+<p>代入後</p>
+<script type="math/tex; mode=display">
+\mathcal{L}_{\theta} 
+= - \log \frac{\exp({\text{v}'_{w_O}}^{\top}{\text{v}_{w_I}})}{\sum_{i=1}^V \exp({\text{v}'_{w_i}}^{\top}{\text{v}_{w_I} })}
+= - {\text{v}'_{w_O}}^{\top}{\text{v}_{w_I} } + \log \sum_{i=1}^V \exp({\text{v}'_{w_i} }^{\top}{\text{v}_{w_I}})</script><p>Compute gradient of loss function w.s.t mode’s parameter $\theta$，令 $z_{IO} = {\text{v}’_{w_O}}^{\top}{\text{v}_{w_I}}$ ; $z_{Ii} = {\text{v}’_{w_i}}^{\top}{\text{v}_{w_I}}$</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\nabla_\theta \mathcal{L}_{\theta}
+&= \nabla_\theta\big( - z_{IO} + \log \sum_{i=1}^V e^{z_{Ii}} \big) \\ 
+&= - \nabla_\theta z_{IO} + \nabla_\theta \big( \log \sum_{i=1}^V e^{z_{Ii}} \big) \\
+&= - \nabla_\theta z_{IO} + \frac{1}{\sum_{i=1}^V e^{z_{Ii}}} \sum_{i=1}^V e^{z_{Ii}} \nabla_\theta z_{Ii} \\
+&= - \nabla_\theta z_{IO} + \sum_{i=1}^V \frac{e^{z_{Ii}}}{\sum_{i=1}^V e^{z_{Ii}}} \nabla_\theta z_{Ii} \\
+&= - \nabla_\theta z_{IO} + \sum_{i=1}^V p(w_i \vert w_I) \nabla_\theta z_{Ii} \\
+&= - \nabla_\theta z_{IO} + \mathbb{E}_{w_i \sim Q(\tilde{w})} \nabla_\theta z_{Ii}
+\end{aligned}</script><p>可以看出，gradient $\nabla_{\theta}\mathcal{L}_{\theta}$是由兩部分組成 :</p>
+<ol>
+<li>a positive reinforcement for the target word $w_O$,  $\nabla_{\theta}z_{O}$</li>
+<li>a negative reinforcement for all other words $w_i$, which weighted by their probability, $\sum_{i=1}^V p(w_i \vert w_I) \nabla_\theta z_{Ii}$</li>
+</ol>
+<p><strong>Second term actually is just the expectation  of the gradient $\nabla_{\theta}z_{Ii}$ for all words $w_i$ in $V$。</strong></p>
+<p>And probability distribution $Q(\tilde{w})$ could see as the distribution of noise samples</p>
+<h3 id="NCE-sample-原理"><a href="#NCE-sample-原理" class="headerlink" title="NCE sample 原理"></a>NCE sample 原理</h3><p>According to gradient of loss function $\nabla_{\theta}\mathcal{L}_{\theta}$</p>
+<script type="math/tex; mode=display">
+\nabla_{\theta}\mathcal{L}_{\theta}
+ =- \nabla_\theta z_{IO} + \mathbb{E}_{w_i \sim Q(\tilde{w})} \nabla_\theta z_{Ii}</script><p>Given an input word $w_I$, the correct output word is known as $w$，我們同時可以從 noise sample distribution $Q$  sample 出 $M$ 個 samples $\tilde{w}_1<br>, \tilde{w}_2, \dots, \tilde{w}_M \sim Q$ 來近似 cross entropy gradient 的後半部分</p>
+<p>現在我們手上有個 correct output word $w$ 和 $M$ 個從 $Q$ sample 出來的 word $\tilde{w}$ ， 假設我們有一個  binary classifier 負責告訴我們，手上的 word $w$，哪個是 correct  $p(d=1 | w, w_I)$，哪個是 negative $p(d=0 | \tilde{w}, w_I)$</p>
+<p>於是 loss function  改寫成：</p>
+<script type="math/tex; mode=display">\mathcal{L}_\theta = - [ \log p(d=1 \vert w, w_I) + \sum_{i=1, \tilde{w}_i \sim Q}^M \log p(d=0|\tilde{w}_i, w_I) ]</script><p>According to the law of large numbers $E_{p(x)} [ f(x)] \approx \frac{1}{n} \sum^{n}_{i=1}f(x_i)$，we could simplify:</p>
+<script type="math/tex; mode=display">\mathcal{L}_\theta = - [ \log p(d=1 \vert w, w_I) +  M \mathbb{E}_{\tilde{w}_i \sim Q} \log p(d=0|\tilde{w}_i, w_I)]</script><p>$p(d |w, w_I)$ 可以從 joint probability $p(d, w|w_I)$ 求</p>
+<ol>
+<li><p>$p(d, w | w_I) =<br>\begin{cases}<br>  \frac{1}{M+1} p(w \vert w_I) &amp; \text{if } d=1 \\<br>  \frac{M}{M+1} q(\tilde{w}) &amp; \text{if } d=0<br>  \end{cases}$</p>
+<ul>
+<li>$d$  is binary value</li>
+<li>$M$ is number of samples，we have a correct output word $w$ and sample M word from distribution $Q$</li>
+</ul>
+</li>
+<li><p>因爲 $p(d| w, w_I) = \frac{p(d, w, w_I)}{p(w, w_I)} = \frac{p(d, w | w_I) p(w_I)}{p(w|w_I)p(w_I)} = \frac{p(d, w| w_I)}{\sum_dp(d,w| w_I)}$</p>
+<p>可以得出</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p(d=1 \vert w, w_I) 
+&= \frac{p(d=1, w \vert w_I)}{p(d=1, w \vert w_I) + p(d=0, w \vert w_I)}
+&= \frac{p(w \vert w_I)}{p(w \vert w_I) + Mq(\tilde{w})}
+\end{aligned}</script><script type="math/tex; mode=display">
+\begin{aligned}
+p(d=0 \vert w, w_I) 
+&= \frac{p(d=0, w \vert w_I)}{p(d=1, w \vert w_I) + p(d=0, w \vert w_I)}
+&= \frac{Mq(\tilde{w})}{p(w \vert w_I) + Mq(\tilde{w})}
+\end{aligned}</script></li>
+</ol>
+<ul>
+<li>$q(\tilde{w})$ 表從 distribution $Q$ sample 出 word $\tilde{w}$ 的 probability</li>
+</ul>
+<p>最終 loss function of NCE</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\mathcal{L}_\theta 
+& = - [ \log p(d=1 \vert w, w_I) +  \sum_{\substack{i=1 \\ \tilde{w}_i \sim Q}}^M \log p(d=0|\tilde{w}_i, w_I)] \\
+& = - [ \log \frac{p(w \vert w_I)}{p(w \vert w_I) + Mq(\tilde{w})} +  \sum_{\substack{i=1 \\ \tilde{w}_i \sim Q}}^M \log \frac{Mq(\tilde{w}_i)}{p(w \vert w_I) + Mq(\tilde{w}_i)}]
+\end{aligned}</script><p>$p(w_O \vert w_I) = \frac{\exp({\text{v}’_{w_O}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}’_{w_i}}^{\top} \text{v}_{w_I})}$ 代入 $\mathcal{L}_{\theta}$</p>
+<script type="math/tex; mode=display">\begin{aligned}\mathcal{L}_{\theta} &= -[log\frac{\frac{\exp({\text{v}'_{w}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}'_{w_i}}^{\top} \text{v}_{w_I})}}{\frac{\exp({\text{v}'_{w}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}'_{w_i}}^{\top} \text{v}_{w_I})+ Mq(\tilde{w})}} + \sum_{\substack{i=1 \\ \tilde{w}_i\sim Q}}^M \log \frac{Mq(\tilde{w}_i)}{\frac{\exp({\text{v}'_{w}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}'_{w_i}}^{\top} \text{v}_{w_I})}+ Mq(\tilde{w}_i)}]\end{aligned}</script><p>可以看到 normalizer $Z(w) = {\sum_{i=1}^V \exp({\text{v}’_{w_i}}^{\top} \text{v}_{w_I})}$ 依然要 sum up the entire vocabulary，實務上通常會假設 $Z(w)\approx1$，所以 $\mathcal{L}_\theta$ 簡化成:</p>
+<script type="math/tex; mode=display">\mathcal{L}_\theta = - [ \log \frac{\exp({\text{v}'_w}^{\top}{\text{v}_{w_I}})}{\exp({\text{v}'_w}^{\top}{\text{v}_{w_I}}) + Mq(\tilde{w})} +  \sum_{\substack{i=1 \\ \tilde{w}_i \sim Q}}^M \log \frac{Mq(\tilde{w}_i)}{\exp({\text{v}'_w}^{\top}{\text{v}_{w_I}}) + Mq(\tilde{w}_i)}]</script><h3 id="關於-Noise-distribution-Q"><a href="#關於-Noise-distribution-Q" class="headerlink" title="關於 Noise distribution $Q$"></a>關於 Noise distribution $Q$</h3><p>關於 noise distribution $Q$，在設計的時候通常會考慮</p>
+<ul>
+<li>it should intuitively be very similar to the real data distribution.</li>
+<li>it should be easy to sample from.</li>
+</ul>
+<h2 id="Negative-Sampling-NEG"><a href="#Negative-Sampling-NEG" class="headerlink" title="Negative Sampling (NEG)"></a>Negative Sampling (NEG)</h2><p>Negative sampling can be seen as an approximation to NCE</p>
+<ul>
+<li>Noise Contrastive Estimation attempts to approximately maximize the log probability of the softmax output</li>
+<li>The objective of NEG is to <strong>learn high-quality word representations</strong> rather than achieving low perplexity on a test set, as is the goal in language modeling</li>
+</ul>
+<h3 id="從-NCE-說起"><a href="#從-NCE-說起" class="headerlink" title="從 NCE 說起"></a>從 NCE 說起</h3><p>NCE  $p(d|w, w_I)$ equation，$p(d=1 |w, w_I)$ 代表 word $w$ 是 output word 的機率; $p(d=0|w, w_I)$ 表 sample 出 noise word 的機率</p>
+<script type="math/tex; mode=display">\begin{aligned}
+p(d=1 \vert w, w_I) 
+&= \frac{p(d=1, w \vert w_I)}{p(d=1, w \vert w_I) + p(d=0, w \vert w_I)}
+&= \frac{p(w \vert w_I)}{p(w \vert w_I) + Mq(\tilde{w})}
+\end{aligned}</script><script type="math/tex; mode=display">\begin{aligned}
+p(d=0 \vert w, w_I) 
+&= \frac{p(d=0, w \vert w_I)}{p(d=1, w \vert w_I) + p(d=0, w \vert w_I)}
+&= \frac{Mq(\tilde{w})}{p(w \vert w_I) + Mq(\tilde{w})}
+\end{aligned}</script><p>NCE 假設  $p(w_O \vert w_I) = \frac{\exp({\text{v}’_{w_O}}^{\top} \text{v}_{w_I})}{\sum_{i=1}^V \exp({\text{v}’_{w_i}}^{\top} \text{v}_{w_I})}$ 中的分母 $Z(w) = {\sum_{i=1}^V \exp({\text{v}’_{w_i}}^{\top} \text{v}_{w_I})} = 1$，所以簡化成</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p(d=1 \vert w, w_I) 
+&= \frac{p(w \vert w_I)}{p(w \vert w_I) + Mq(\tilde{w})}
+&= \frac{\exp({\text{v}^{'}_w}^{\top}\text{v}_{w_i})}{\exp({\text{v}^{'}_w}^{\top}\text{v}_{w_i}) + Mq(\tilde{w})}
+\end{aligned}</script><h3 id="NEG-繼續化簡"><a href="#NEG-繼續化簡" class="headerlink" title="NEG 繼續化簡"></a>NEG 繼續化簡</h3><p><strong>NEG 繼續假設 $Nq(\tilde{w}) = 1$</strong> 式子變成</p>
+<script type="math/tex; mode=display">\begin{aligned}
+p(d=1 \vert w, w_I) 
+&=
+\frac{\exp({\text{v}^{'}_w}^{\top}\text{v}_{w_i})}{\exp({\text{v}^{'}_w}^{\top}\text{v}_{w_i}) + 1}
+&=
+\frac{1}{1  +\exp(-{\text{v}^{'}_w}^{\top}\text{v}_{w_i})} = \sigma({\text{v}^{'}_w}^{\top}\text{v}_{w_i})
+\end{aligned}</script><script type="math/tex; mode=display">p(d=0|w, w_I) = 1 - \sigma({\text{v}^{'}_w}^{\top}\text{v}_{w_i}) = \sigma(-{\text{v}^{'}_w}^{\top}\text{v}_{w_i})</script><p>最終得到 loss function </p>
+<script type="math/tex; mode=display">\mathcal{L}_\theta = - [ \log \sigma({\text{v}'_{w}}^\top \text{v}_{w_I}) +  \sum_{\substack{i=1 \\ \tilde{w}_i \sim Q}}^M \log \sigma(-{\text{v}'_{\tilde{w}_i}}^\top \text{v}_{w_I})]</script><p>前項是 positive sample $p(d=1 \vert w, w_I)$，後項是 M 個 negative samples $p(d=0|w, w_I) $</p>
+<p>在 skipgram with negative sampling 上</p>
+<ul>
+<li>$\text{v}_{w_I}$ 表 input 的 center word  $w_I$ 的 vector，來自 $W$</li>
+<li>$\text{v}’_{w}$ 表 output side  的一個 context word  $w$ 的 vector， 來自 $W’$</li>
+</ul>
+<p>實作上  skipgram 一個單位的 data sample 只會包含 一個 center word 與 一個 context word  的 pair 對 $(w_I, w_{C,j})$</p>
+<p>參閱 [todo]</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><ul>
+<li>NEG 實際上目的跟 Hierarchical Softmax 不一樣，並不直接學 likelihood of correct word，而是直接學 words 的 embedding，也就是更好的 word distribution representation</li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li>Learning Word Embedding <a target="_blank" rel="noopener" href="https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html#loss-functions">https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html#loss-functions</a><ul>
+<li>此篇從 skip gram 講解 negative sampling</li>
+</ul>
+</li>
+<li>On word embeddings - Part 2: Approximating the Softmax <a target="_blank" rel="noopener" href="https://ruder.io/word-embeddings-softmax/index.html#samplingbasedapproaches">https://ruder.io/word-embeddings-softmax/index.html#samplingbasedapproaches</a><ul>
+<li>此篇從 CBOW 講解 negative sampling</li>
+</ul>
+</li>
+<li>Goldberg, Y., &amp; Levy, O. (2014). word2vec Explained: deriving Mikolov et al.’s negative-sampling word-embedding method, (2), 1–5. Retrieved from <a target="_blank" rel="noopener" href="http://arxiv.org/abs/1402.3722">http://arxiv.org/abs/1402.3722</a></li>
+<li>Word2Vec Tutorial Part 2 - Negative Sampling [<a target="_blank" rel="noopener" href="http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/">http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/</a></li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Negative Sampling 背後的數學</p><p><a href="https://seed9d.github.io/negative-sampling-in-word2vec/">https://seed9d.github.io/negative-sampling-in-word2vec/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-01-24</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-01-25</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/NLP/">NLP, </a><a class="link-muted" rel="tag" href="/tags/word-embedding/">word embedding </a></div></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/hierarchical-softmax-in-word2vec/"><span class="level-item">Hierarchical Softmax 背後的數學</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "2b0232517645790cb2dae6a586d6c551",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Noise-Contrastive-Estimation-NCE"><span class="level-left"><span class="level-item">Noise Contrastive Estimation (NCE)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從-cross-entropy-說起"><span class="level-left"><span class="level-item">從 cross entropy 說起</span></span></a></li><li><a class="level is-mobile" href="#NCE-sample-原理"><span class="level-left"><span class="level-item">NCE sample 原理</span></span></a></li><li><a class="level is-mobile" href="#關於-Noise-distribution-Q"><span class="level-left"><span class="level-item">關於 Noise distribution $Q$</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Negative-Sampling-NEG"><span class="level-left"><span class="level-item">Negative Sampling (NEG)</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從-NCE-說起"><span class="level-left"><span class="level-item">從 NCE 說起</span></span></a></li><li><a class="level is-mobile" href="#NEG-繼續化簡"><span class="level-left"><span class="level-item">NEG 繼續化簡</span></span></a></li></ul></li><li><a class="level is-mobile" href="#結論"><span class="level-left"><span class="level-item">結論</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T15:05:45.000Z">2021-01-24</time></p><p class="title"><a href="/negative-sampling-in-word2vec/">Negative Sampling 背後的數學</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T11:51:54.000Z">2021-01-24</time></p><p class="title"><a href="/hierarchical-softmax-in-word2vec/">Hierarchical Softmax 背後的數學</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T11:33:05.000Z">2021-01-24</time></p><p class="title"><a href="/NLP-language-model/">NLP Language Model</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T11:11:42.000Z">2021-01-24</time></p><p class="title"><a href="/word2vec-from-theory-2-implement/">word2Vec 從原理到實現</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-23T16:09:45.000Z">2021-01-24</time></p><p class="title"><a href="/GBDT-Classifier-step-by-step/">一步步透視 GBDT Classifier</a></p><p class="categories"><a href="/categories/Machine-Learning/">Machine Learning</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">7</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">2</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">3</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/">Seed 9D</a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
