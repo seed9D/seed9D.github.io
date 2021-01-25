@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://seed9d.github.io/NLP-language-model/</loc>
+    <lastmod>2021-01-25</lastmod>
+  </url>
+  <url>
     <loc>https://seed9d.github.io/negative-sampling-in-word2vec/</loc>
-    <lastmod>2021-01-24</lastmod>
+    <lastmod>2021-01-25</lastmod>
   </url>
   <url>
     <loc>https://seed9d.github.io/word2vec-from-theory-2-implement/</loc>
@@ -10,10 +14,6 @@
   </url>
   <url>
     <loc>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</loc>
-    <lastmod>2021-01-24</lastmod>
-  </url>
-  <url>
-    <loc>https://seed9d.github.io/NLP-language-model/</loc>
     <lastmod>2021-01-24</lastmod>
   </url>
   <url>
