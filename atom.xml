@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-01-25T00:48:50.000Z</updated>
+  <updated>2021-01-31T15:53:56.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -17,11 +17,82 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Pytorch 實作 CBOW with Hierarchical Softmax</title>
+    <link href="https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/"/>
+    <id>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</id>
+    <published>2021-01-31T15:25:31.000Z</published>
+    <updated>2021-01-31T15:53:56.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;CBOW-with-Hierarchical-Softmax&quot;&gt;&lt;a href=&quot;#CBOW-with-Hierarchical-Softmax&quot; class=&quot;headerlink&quot; title=&quot;CBOW with Hierarchical Softmax&quot;&gt;&lt;/a&gt;CBOW with Hierarchical Softmax&lt;/h1&gt;&lt;p&gt;CBOW  的思想是用兩側 context words 去預測中間的 center word&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(center|context;\theta)&lt;/script&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+    <category term="pytorch" scheme="https://seed9d.github.io/tags/pytorch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Pytorch 實作 Skipgram with Negative Sampling</title>
+    <link href="https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/"/>
+    <id>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</id>
+    <published>2021-01-31T15:15:36.000Z</published>
+    <updated>2021-01-31T15:41:53.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Skipgram-with-Negative-Sampling&quot;&gt;&lt;a href=&quot;#Skipgram-with-Negative-Sampling&quot; class=&quot;headerlink&quot; title=&quot;Skipgram with Negative Sampling&quot;&gt;&lt;/a&gt;Skipgram with Negative Sampling&lt;/h1&gt;&lt;p&gt;skipgram  的思想是用中心詞 center word 去預測兩側的 context words &lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;P(context|center; \theta)&lt;/script&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+    <category term="pytorch" scheme="https://seed9d.github.io/tags/pytorch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Pytorch 實作 Word2Vec with Softmax</title>
+    <link href="https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/"/>
+    <id>https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/</id>
+    <published>2021-01-31T15:03:30.000Z</published>
+    <updated>2021-01-31T15:40:20.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/categories/NLP/"/>
+    
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="word embedding" scheme="https://seed9d.github.io/tags/word-embedding/"/>
+    
+    <category term="pytorch" scheme="https://seed9d.github.io/tags/pytorch/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Negative Sampling 背後的數學</title>
     <link href="https://seed9d.github.io/negative-sampling-in-word2vec/"/>
     <id>https://seed9d.github.io/negative-sampling-in-word2vec/</id>
     <published>2021-01-24T15:05:45.000Z</published>
-    <updated>2021-01-25T00:48:50.000Z</updated>
+    <updated>2021-01-31T15:35:22.000Z</updated>
     
     
     <summary type="html">&lt;p&gt;以下用 Skip-gram 為例&lt;/p&gt;
@@ -43,7 +114,7 @@
     <link href="https://seed9d.github.io/hierarchical-softmax-in-word2vec/"/>
     <id>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</id>
     <published>2021-01-24T11:51:54.000Z</published>
-    <updated>2021-01-24T13:58:47.000Z</updated>
+    <updated>2021-01-31T15:36:18.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;以-CBOW-為例&quot;&gt;&lt;a href=&quot;#以-CBOW-為例&quot; class=&quot;headerlink&quot; title=&quot;以 CBOW 為例&quot;&gt;&lt;/a&gt;以 CBOW 為例&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/Pbdqtx9.png&quot; style=&quot;zoom:50%;&quot; /&gt;&lt;/p&gt;</summary>
@@ -84,7 +155,7 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
     <link href="https://seed9d.github.io/word2vec-from-theory-2-implement/"/>
     <id>https://seed9d.github.io/word2vec-from-theory-2-implement/</id>
     <published>2021-01-24T11:11:42.000Z</published>
-    <updated>2021-01-24T16:16:38.000Z</updated>
+    <updated>2021-01-31T15:37:30.000Z</updated>
     
     
     <summary type="html">&lt;p&gt;這篇是在 notion 整理的筆記大綱，只提供綱要性的說明&lt;/p&gt;
@@ -148,7 +219,7 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
     <link href="https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/"/>
     <id>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</id>
     <published>2021-01-18T05:40:03.000Z</published>
-    <updated>2021-01-24T12:34:10.000Z</updated>
+    <updated>2021-01-25T15:48:21.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;TL;DR&lt;/h1&gt;&lt;ul&gt;
@@ -176,8 +247,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckkb4qj5300030ce221fmb5r8/"/>
-    <id>https://seed9d.github.io/ckkb4qj5300030ce221fmb5r8/</id>
+    <link href="https://seed9d.github.io/ckklb6dsl000awwe25o6b5kxn/"/>
+    <id>https://seed9d.github.io/ckklb6dsl000awwe25o6b5kxn/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     

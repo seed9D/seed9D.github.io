@@ -2,6 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/word2vec-from-theory-2-implement/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/negative-sampling-in-word2vec/</loc>
+    
+    <lastmod>2021-01-31</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</loc>
+    
+    <lastmod>2021-01-25</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://seed9d.github.io/NLP-language-model/</loc>
     
     <lastmod>2021-01-25</lastmod>
@@ -9,35 +58,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/negative-sampling-in-word2vec/</loc>
-    
-    <lastmod>2021-01-25</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/word2vec-from-theory-2-implement/</loc>
-    
-    <lastmod>2021-01-24</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</loc>
-    
-    <lastmod>2021-01-24</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>
-    
-    <lastmod>2021-01-24</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</loc>
     
     <lastmod>2021-01-24</lastmod>
     
@@ -65,7 +86,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/ckkb4qj5300030ce221fmb5r8/</loc>
+    <loc>https://seed9d.github.io/ckklb6dsl000awwe25o6b5kxn/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -81,7 +102,7 @@
 
   <url>
     <loc>https://seed9d.github.io/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -89,21 +110,28 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/ML/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/NLP/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/word-embedding/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/tags/pytorch/</loc>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -112,14 +140,14 @@
   
   <url>
     <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/NLP/</loc>
-    <lastmod>2021-01-25</lastmod>
+    <lastmod>2021-01-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Pytorch 實作 Word2Vec with Softmax - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax"><meta property="og:type" content="article"><meta property="og:title" content="Pytorch 實作 Word2Vec with Softmax"><meta property="og:url" content="https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/N0SXV8P.png"><meta property="og:image" content="https://i.imgur.com/1PILCdT.png"><meta property="og:image" content="https://i.imgur.com/W2w6p65.png"><meta property="og:image" content="https://i.imgur.com/AoD1UHk.png"><meta property="og:image" content="https://i.imgur.com/dsXqMKo.png"><meta property="og:image" content="https://i.imgur.com/2pS6zCo.png"><meta property="article:published_time" content="2021-01-31T15:03:30.000Z"><meta property="article:modified_time" content="2021-01-31T15:40:20.000Z"><meta property="article:author" content="seed9D"><meta property="article:tag" content="NLP"><meta property="article:tag" content="word embedding"><meta property="article:tag" content="pytorch"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/N0SXV8P.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/"},"headline":"seed9D's blog","image":["https://i.imgur.com/N0SXV8P.png","https://i.imgur.com/1PILCdT.png","https://i.imgur.com/W2w6p65.png","https://i.imgur.com/AoD1UHk.png","https://i.imgur.com/dsXqMKo.png","https://i.imgur.com/2pS6zCo.png"],"datePublished":"2021-01-31T15:03:30.000Z","dateModified":"2021-01-31T15:40:20.000Z","author":{"@type":"Person","name":"seed9D"},"description":"用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax"}</script><link rel="canonical" href="https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>Pytorch 實作 Word2Vec with Softmax</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-01-31</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-01-31</time></span><span class="level-item"><a class="link-muted" href="/categories/NLP/">NLP</a></span><span class="level-item">9 minutes read (About 1404 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax</p>
+<a id="more"></a>
+<h1 id="CBOW"><a href="#CBOW" class="headerlink" title="CBOW"></a>CBOW</h1><p>CBOW  的思想是用兩側 context 詞預測中間 center 詞，context 詞有數個，視 window size 大小而定</p>
+<script type="math/tex; mode=display">
+P(center|context;\theta)</script><p><img src="https://i.imgur.com/N0SXV8P.png" style="zoom:50%;" /></p>
+<ul>
+<li>$V$： the vocabulary size</li>
+<li>$N$ : the embedding dimension</li>
+<li>$W$： the input side matrix which is  $V \times N$<ul>
+<li>each row is the $N$ dimension vector</li>
+<li>$\text{v}_{w_i}$ is the representation of the input word $w_i$</li>
+</ul>
+</li>
+<li>$W’$: the output side matrix  which is $N \times V$<ul>
+<li>each column is the $N$ dimension vector</li>
+<li>$\text{v}^{‘}_{w_j}$ is the j-th column of the matrix $W’$ representing $w_j$</li>
+</ul>
+</li>
+</ul>
+<p>Condition probability $P(center | context; \theta)$ 中 variable $\textit{center word}$  有限，所以是個 descrete probability，可以轉化成多分類問題來解</p>
+<p>令 $w_O$ 表 center word, $w_I$ 表 input 的 context word，則</p>
+<script type="math/tex; mode=display">P(center|context;\theta) = P(w_O|w_I; \theta) =  \cfrac{\exp(h^\top \text{v}^{'}_{w_{O}})}{\sum_{w_ \in V}\exp(h^\top \text{v}'_{w_i})}</script><ul>
+<li>$h$ 表 hidden layer 的輸出，其值為 input context word vector 的平均 $\cfrac{1}{C}(\text{v}_{w_1} + \text{v}_{w_2}+ …+ \text{v}_{w_C})^T$</li>
+</ul>
+<p>訓練過程 $\text{maximize log of condition probability } P(w_O|w_I; \theta$</p>
+<script type="math/tex; mode=display">
+\begin{aligned} & \text{maxmize}_\theta  \ \log P(w_O|w_I; \theta)
+
+\\&  = \text{minimize}_\theta \ -\log \ P(w_O|w_I; \theta)
+
+
+\\& = \text{minimize}_\theta  \ - \log \cfrac{\exp(h^\top \text{v}^{'}_{w_{O}})}{\sum_{w_i  \in V} \exp(h^\top \text{v}^{'}_{w_i})}
+ \end{aligned}</script><h2 id="Pytorch-CBOW-softmax"><a href="#Pytorch-CBOW-softmax" class="headerlink" title="Pytorch  CBOW + softmax"></a>Pytorch  CBOW + softmax</h2><h3 id="CBOW-softmax-模型定義"><a href="#CBOW-softmax-模型定義" class="headerlink" title="CBOW + softmax 模型定義"></a>CBOW + softmax 模型定義</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CBOWSoftmax</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embedding_dim</span>):</span></span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.syn0 = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        self.syn1 = nn.Linear(embedding_dim, vocab_size)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, context, center</span>):</span></span><br><span class="line">        <span class="comment">#  context: [b_size, windows_size]</span></span><br><span class="line">        <span class="comment">#  center: [b_size, 1]</span></span><br><span class="line">        embds = self.syn0(context).mean(dim=<span class="number">1</span>) <span class="comment"># [b_size, embedding_dim]</span></span><br><span class="line">        out = self.syn1(embds)</span><br><span class="line">        </span><br><span class="line">        log_probs = F.log_softmax(out, dim=<span class="number">1</span>)</span><br><span class="line">        loss = F.nll_loss(log_probs, center.view(-<span class="number">1</span>), reduction=<span class="string">&#x27;mean&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>syn0 對應到 input 側的 embedding matrix $W$</p>
+</li>
+<li><p>syn1 對應到 output 側的 embedding matrix  $W’$</p>
+</li>
+<li><p>loss 的計算</p>
+<p>$- log \cfrac{\exp(h^\top \text{v}^{‘}_{w_{O}})}{\sum_{w_i  \in V} \exp(h^\top \text{v}^{‘}_{w_i})}$</p>
+</li>
+<li><p>input: context  跟 center 內容都是將 word index  化</p>
+<p><img src="https://i.imgur.com/1PILCdT.png" style="zoom: 50%;" /></p>
+</li>
+<li><p>因爲 context 是由 windows size N 個 words 組成，所以總共有 N 個 word embedding ，常規操作是 sum or  mean</p>
+</li>
+</ul>
+<h3 id="Training-Stage"><a href="#Training-Stage" class="headerlink" title="Training Stage"></a>Training Stage</h3><p>訓練過程省略，有興趣的可以去 github 看 notebook</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/seed9D/hands-on-machine-learning/blob/main/Embedding/CBOW_softmax.ipynb">seed9D/hands-on-machine-learning</a></p>
+<h3 id="取出-Embedding"><a href="#取出-Embedding" class="headerlink" title="取出 Embedding"></a>取出 Embedding</h3><p>創建一個衡量 cosine similarity的 class</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CosineSimilarity</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, word_embedding, idx_to_word_dict, word_to_idx_dict</span>):</span></span><br><span class="line">        self.word_embedding = word_embedding <span class="comment"># normed already</span></span><br><span class="line">        self.idx_to_word_dict = idx_to_word_dict</span><br><span class="line">        self.word_to_idx_dict = word_to_idx_dict</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_synonym</span>(<span class="params">self, word, topK=<span class="number">10</span></span>):</span></span><br><span class="line">        idx = self.word_to_idx_dict[word]</span><br><span class="line">        embed = self.word_embedding[idx]</span><br><span class="line">        </span><br><span class="line">        cos_similairty = w2v_embedding @ embed</span><br><span class="line">        </span><br><span class="line">        topK_index = np.argsort(-cos_similairty)[:topK]</span><br><span class="line">        pairs = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> topK_index:</span><br><span class="line">            w = self.idx_to_word_dict[i]</span><br><span class="line"><span class="comment">#             pairs[w] = cos_similairty[i]</span></span><br><span class="line">            pairs.append((w, cos_similairty[i]))</span><br><span class="line">        <span class="keyword">return</span> pairs</span><br></pre></td></tr></table></figure>
+<p>僅使用 syn0 做為 embedding，記得 L2 norm </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">syn0 = model.syn0.weight.data</span><br><span class="line"></span><br><span class="line">w2v_embedding = syn0 </span><br><span class="line">w2v_embedding = w2v_embedding.numpy()</span><br><span class="line">l2norm = np.linalg.norm(w2v_embedding, <span class="number">2</span>, axis=<span class="number">1</span>, keepdims=<span class="literal">True</span>)</span><br><span class="line">w2v_embedding = w2v_embedding / l2norm</span><br></pre></td></tr></table></figure>
+<p>訓練的 corpus 是聖經，所以簡單看下 jesus 與 christ 兩個 word 的相似詞，效果不予置評</p>
+<p><img src="https://i.imgur.com/W2w6p65.png" alt="Pytorch%20Implement%20Naive%20Word2Vec%20with%20Softmax%20ae605d15ce0e403694f9d8049c1f2354/Untitled%202.png"></p>
+<h1 id="Skipgram"><a href="#Skipgram" class="headerlink" title="Skipgram"></a>Skipgram</h1><p>skipgram  的思想是用中心詞 center word 去預測兩側的 context words </p>
+<script type="math/tex; mode=display">P(context|center; \theta)</script><p><img src="https://i.imgur.com/AoD1UHk.png" style="zoom:50%;" /></p>
+<ul>
+<li>$V$： the vocabulary size</li>
+<li>$N$ : the embedding dimension</li>
+<li>$W$： the input side matrix which is  $V \times N$<ul>
+<li>each row is the $N$ dimension vector</li>
+<li>$\text{v}_{w_i}$ is the representation of the input word $w_i$</li>
+</ul>
+</li>
+<li>$W’$: the output side matrix  which is $N \times V$<ul>
+<li>each column is the $N$ dimension vector</li>
+<li>$\text{v}^{‘}_{w_j}$ is the j-th column of the matrix $W’$ representing $w_j$</li>
+</ul>
+</li>
+</ul>
+<p>令 $w_I$ 表 input 的 center word， $w_{O,j}$ 表 target 的 第  $j$  個 context word ，則 condition  probability</p>
+<script type="math/tex; mode=display">P(context|center;\theta) = P(w_{O,1}, w_{O,2},...,w_{O,C}|w_I) = \prod^C_{c=1 }\cfrac{\exp(h^\top \text{v}'_{w_{O,c}})}{\sum_{w_i \in V} \exp(h^\top \text{v}'_{w_i})}</script><ul>
+<li>$h$ 表 hidden layer 的輸出，在 skipgram 實際上就是 $\text{v}_{w_I}$</li>
+</ul>
+<p>Skipgram  的  objective function</p>
+<script type="math/tex; mode=display">
+\begin{aligned} & -\log P(w_{O,1}, w_{O,2},...,w_{O,C}|w_I) 
+
+\\ & = -\log \prod^C_{c=1}\cfrac{\exp(h^\top \text{v}'_{w_{O,c}})}{\sum_{w_i \in V} \exp(h^{\top} \text{v}'_{w_i})}
+
+\\ & = -\log \prod^C_{c=1}\cfrac{\exp(\text{v}^\top_{w_I} \text{v}'_{w_{O,c}})}{\sum_{w_i \in V} \exp(\text{v}^\top_{w_I} \text{v}'_{w_i})}
+
+\\& = -\sum^C_{c=1}\log \cfrac{\exp(\text{v}^\top_{w_I} \text{v}'_{w_{O,c}})}{\sum_{w_i \in V} \exp(\text{v}^\top_{w_I} \text{v}'_{w_i})}
+
+\end{aligned}</script><h2 id="Pytorch-skipgram-softmax"><a href="#Pytorch-skipgram-softmax" class="headerlink" title="Pytorch  skipgram + softmax"></a>Pytorch  skipgram + softmax</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SkipgramSoftmax</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, embedding_dim</span>):</span></span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.vocab_size = vocab_size</span><br><span class="line">        self.embedding_dim = embedding_dim</span><br><span class="line">        self.syn0 = nn.Embedding(vocab_size, embedding_dim)  <span class="comment"># |V| x |K|</span></span><br><span class="line">        self.syn1 = nn.Linear(embedding_dim, vocab_size)  <span class="comment"># |K| x |V|</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, center, context</span>):</span></span><br><span class="line">        <span class="comment"># center: [b_size, 1]</span></span><br><span class="line">        <span class="comment"># context: [b_size, 1]</span></span><br><span class="line">        embds = self.syn0(center.view(-<span class="number">1</span>))</span><br><span class="line">        out = self.syn1(embds)</span><br><span class="line">        log_probs = F.log_softmax(out, dim=<span class="number">1</span>)</span><br><span class="line">        loss = F.nll_loss(log_probs, context.view(-<span class="number">1</span>), reduction=<span class="string">&#x27;mean&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<ul>
+<li>syn0 對應到 input 側的 embedding matrix $W$</li>
+<li>syn1 對應到 output 側的 embedding matrix  $W’$</li>
+</ul>
+<p>實際上，skipgram 每筆 training data 只需要 (a center word, a context word) 的 pair 即可</p>
+<p><img src="https://i.imgur.com/dsXqMKo.png" style="zoom:50%;" /></p>
+<p> 所以  loss function 實現上非常簡單</p>
+<script type="math/tex; mode=display">-\log \cfrac{\exp(\text{v}^\top_{w_I} \text{v}'_{w_{O,c}})}{\sum_{w_i \in V} \exp(\text{v}^\top_{w_I} \text{v}'_{w_i})}</script><h3 id="Training-Stage-1"><a href="#Training-Stage-1" class="headerlink" title="Training Stage"></a>Training Stage</h3><p>訓練過程省略，有興趣的可以去 github 看 notebook</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/seed9D/hands-on-machine-learning/tree/main/Embedding">seed9D/hands-on-machine-learning</a></p>
+<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3><p>取出 embedding，這次 embedding  嘗試 $(W + W’)/2$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">syn0 = model.syn0.weight.data</span><br><span class="line">syn1 = model.syn1.weight.data</span><br><span class="line"></span><br><span class="line">w2v_embedding = (syn0 + syn1) / <span class="number">2</span></span><br><span class="line">w2v_embedding = w2v_embedding.numpy()</span><br><span class="line">l2norm = np.linalg.norm(w2v_embedding, <span class="number">2</span>, axis=<span class="number">1</span>, keepdims=<span class="literal">True</span>)</span><br><span class="line">w2v_embedding = w2v_embedding / l2norm</span><br></pre></td></tr></table></figure>
+<p>一樣看 jesus 跟 christ 的相似詞，感覺似乎比 CBOW 好一點</p>
+<p><img src="https://i.imgur.com/2pS6zCo.png" style="zoom:50%;" /></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html">https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://towardsdatascience.com/implementing-word2vec-in-pytorch-skip-gram-model-e6bae040d2fb">https://towardsdatascience.com/implementing-word2vec-in-pytorch-skip-gram-model-e6bae040d2fb</a></li>
+<li>基于PyTorch实现word2vec模型 <a target="_blank" rel="noopener" href="https://lonepatient.top/2019/01/18/Pytorch-word2vec.htm">https://lonepatient.top/2019/01/18/Pytorch-word2vec.htm</a></li>
+<li>Rong, X. (2014). word2vec Parameter Learning Explained, 1–21. Retrieved from <a target="_blank" rel="noopener" href="http://arxiv.org/abs/1411.2738">http://arxiv.org/abs/1411.2738</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/FraLotito/pytorch-continuous-bag-of-words/blob/master/cbow.py">https://github.com/FraLotito/pytorch-continuous-bag-of-words/blob/master/cbow.py</a></li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Pytorch 實作 Word2Vec with Softmax</p><p><a href="https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/">https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-01-31</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-01-31</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/NLP/">NLP, </a><a class="link-muted" rel="tag" href="/tags/word-embedding/">word embedding, </a><a class="link-muted" rel="tag" href="/tags/pytorch/">pytorch </a></div></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Pytorch 實作 Skipgram with Negative Sampling</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/negative-sampling-in-word2vec/"><span class="level-item">Negative Sampling 背後的數學</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "ccbfe48254ad310c75ed1dc0a802206b",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#CBOW"><span class="level-left"><span class="level-item">CBOW</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Pytorch-CBOW-softmax"><span class="level-left"><span class="level-item">Pytorch  CBOW + softmax</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#CBOW-softmax-模型定義"><span class="level-left"><span class="level-item">CBOW + softmax 模型定義</span></span></a></li><li><a class="level is-mobile" href="#Training-Stage"><span class="level-left"><span class="level-item">Training Stage</span></span></a></li><li><a class="level is-mobile" href="#取出-Embedding"><span class="level-left"><span class="level-item">取出 Embedding</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Skipgram"><span class="level-left"><span class="level-item">Skipgram</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Pytorch-skipgram-softmax"><span class="level-left"><span class="level-item">Pytorch  skipgram + softmax</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#模型"><span class="level-left"><span class="level-item">模型</span></span></a></li><li><a class="level is-mobile" href="#Training-Stage-1"><span class="level-left"><span class="level-item">Training Stage</span></span></a></li><li><a class="level is-mobile" href="#Evaluation"><span class="level-left"><span class="level-item">Evaluation</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:25:31.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/">Pytorch 實作 CBOW with Hierarchical Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:15:36.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/">Pytorch 實作 Skipgram with Negative Sampling</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:03:30.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Naive-Word2Vec-with-Softmax/">Pytorch 實作 Word2Vec with Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T15:05:45.000Z">2021-01-24</time></p><p class="title"><a href="/negative-sampling-in-word2vec/">Negative Sampling 背後的數學</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T11:51:54.000Z">2021-01-24</time></p><p class="title"><a href="/hierarchical-softmax-in-word2vec/">Hierarchical Softmax 背後的數學</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">10</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">2</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">4</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
