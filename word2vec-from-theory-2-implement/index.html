@@ -5,7 +5,7 @@
 </head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>word2Vec 從原理到實現</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-01-24</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-01-31</time></span><span class="level-item"><a class="link-muted" href="/categories/NLP/">NLP</a></span><span class="level-item">8 minutes read (About 1226 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>這篇是在 notion 整理的筆記大綱，只提供綱要性的說明</p>
 <h1 id="預備知識"><a href="#預備知識" class="headerlink" title="預備知識"></a>預備知識</h1><ul>
 <li><p>language model： NLP 語言模型</p>
-<p>參閱 <a href="/NLP-language-model/" title="NLP Language Model">NLP Language Model</a></p>
+<p>參閱 <a href="/NLP/NLP-language-model/" title="NLP Language Model">NLP Language Model</a></p>
 </li>
 <li><p>huffman tree</p>
 </li>
@@ -64,12 +64,12 @@ J_\theta = \frac{1}{V}\sum\limits_{t=1}^V\ \sum\limits_{-n \leq j \leq n , \neq 
 <p> $p(w_{t+j} \: | \: w_t ) = \dfrac{\text{exp}({\text{v}^\top_{w_t} \text{v}’_{w_{t+j}}})}{\sum_{w_i \in V} \text{exp}({\text{v}^\top_{w_t} \text{v}’_{w_i}})}$</p>
 <h2 id="兩種-loss-function-優化"><a href="#兩種-loss-function-優化" class="headerlink" title="兩種 loss function 優化"></a>兩種 loss function 優化</h2><p>原始 softmax 作為 objective function， 分母必須對所有 word $w_i$ in vocabulary 與 vector $ h$ 內積，造成運算瓶頸</p>
 <script type="math/tex; mode=display">p(w_O | w_I) = \dfrac{\text{exp}({h^\top \text{v}'_{w_{O}}})}{\sum_{w_i \in V} \text{exp}({h^\top \text{v}'_{w_i}})}</script><p>所以 word2Vec 論文中採用兩種 objective function 的優化方案，Hierarchical Softmax  與 Negatvie Sampling</p>
-<h3 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h3><p>原理推導請參閱  <a href="/hierarchical-softmax-in-word2vec/" title="Hierarchical Softmax 背後的數學">Hierarchical Softmax 背後的數學</a></p>
+<h3 id="Hierarchical-Softmax"><a href="#Hierarchical-Softmax" class="headerlink" title="Hierarchical Softmax"></a>Hierarchical Softmax</h3><p>原理推導請參閱  <a href="/NLP/hierarchical-softmax-in-word2vec/" title="Hierarchical Softmax 背後的數學">Hierarchical Softmax 背後的數學</a></p>
 <blockquote>
 <p>Hierarchical softmax build a full binary tree to avoid computation over all vocabulary</p>
 </blockquote>
 <p><img src="https://i.imgur.com/Kqj88Gk.png" alt=""></p>
-<h3 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h3><p>原理推導請參閱  <a href="/negative-sampling-in-word2vec/" title="Negative Sampling 背後的數學">Negative Sampling 背後的數學</a></p>
+<h3 id="Negative-Sampling"><a href="#Negative-Sampling" class="headerlink" title="Negative Sampling"></a>Negative Sampling</h3><p>原理推導請參閱  <a href="/NLP/negative-sampling-in-word2vec/" title="Negative Sampling 背後的數學">Negative Sampling 背後的數學</a></p>
 <blockquote>
 <p>negative sampling did further simplification because it focuses on learning high-quality word embedding rather than modeling the likelihood of correct word in natural language.</p>
 </blockquote>
@@ -77,12 +77,12 @@ J_\theta = \frac{1}{V}\sum\limits_{t=1}^V\ \sum\limits_{-n \leq j \leq n , \neq 
 <li>In implement，negative sampling addresses this by having each training sample only modify a small percentage of the weights, rather than all of them</li>
 </ul>
 <h1 id="實現-WordVec"><a href="#實現-WordVec" class="headerlink" title="實現 WordVec"></a>實現 WordVec</h1><ul>
-<li>skip gram + softmax  <a href="/Pytorch-Implement-Naive-Word2Vec-with-Softmax/" title="Pytorch 實作 Word2Vec with Softmax">Pytorch 實作 Word2Vec with Softmax</a></li>
-<li>CBOW + softmax  <a href="/Pytorch-Implement-Naive-Word2Vec-with-Softmax/" title="Pytorch 實作 Word2Vec with Softmax">Pytorch 實作 Word2Vec with Softmax</a></li>
-<li>CBOW + hierarchical softmax <a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/" title="Pytorch 實作 CBOW with Hierarchical Softmax">Pytorch 實作 CBOW with Hierarchical Softmax</a></li>
+<li>skip gram + softmax  <a href="/NLP/Pytorch-Implement-Naive-Word2Vec-with-Softmax/" title="Pytorch 實作 Word2Vec with Softmax">Pytorch 實作 Word2Vec with Softmax</a></li>
+<li>CBOW + softmax  <a href="/NLP/Pytorch-Implement-Naive-Word2Vec-with-Softmax/" title="Pytorch 實作 Word2Vec with Softmax">Pytorch 實作 Word2Vec with Softmax</a></li>
+<li>CBOW + hierarchical softmax <a href="/NLP/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/" title="Pytorch 實作 CBOW with Hierarchical Softmax">Pytorch 實作 CBOW with Hierarchical Softmax</a></li>
 <li>CBOW + negatove sampling</li>
 <li>skip gram + hierarchical softmax</li>
-<li>skip gram + negative sampling <a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/" title="Pytorch 實作 Negative Sampling">Pytorch 實作 Negative Sampling</a></li>
+<li>skip gram + negative sampling <a href="/NLP/Pytorch-Implement-Skipgram-with-Negative-Sampling/" title="Pytorch 實作 Skipgram with Negative Sampling">Pytorch 實作 Skipgram with Negative Sampling</a></li>
 </ul>
 <h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>Skip gram 與 CBOW 實際上都 train 了兩個  embedding matrix $W$ and $W’$ </p>
 <ul>

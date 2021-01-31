@@ -134,7 +134,7 @@ p(d=1 \vert w, w_I)
 <li>$\text{v}’_{w}$ 表 output side  的一個 context word  $w$ 的 vector， 來自 $W’$</li>
 </ul>
 <p>實作上  skipgram 一個單位的 data sample 只會包含 一個 center word 與 一個 context word  的 pair 對 $(w_I, w_{C,j})$</p>
-<p>參閱  <a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/" title="Pytorch 實作 Negative Sampling">Pytorch 實作 Negative Sampling</a></p>
+<p>參閱  <a href="/NLP/Pytorch-Implement-Skipgram-with-Negative-Sampling/" title="Pytorch 實作 Skipgram with Negative Sampling">Pytorch 實作 Skipgram with Negative Sampling</a></p>
 <h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><ul>
 <li>NEG 實際上目的跟 Hierarchical Softmax 不一樣，並不直接學 likelihood of correct word，而是直接學 words 的 embedding，也就是更好的 word distribution representation</li>
 </ul>
