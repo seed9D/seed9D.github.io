@@ -45,7 +45,7 @@
     <link href="https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/"/>
     <id>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</id>
     <published>2021-01-31T15:15:36.000Z</published>
-    <updated>2021-01-31T16:40:50.000Z</updated>
+    <updated>2021-01-31T16:43:41.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Skipgram-with-Negative-Sampling&quot;&gt;&lt;a href=&quot;#Skipgram-with-Negative-Sampling&quot; class=&quot;headerlink&quot; title=&quot;Skipgram with Negative Sampling&quot;&gt;&lt;/a&gt;Skipgram with Negative Sampling&lt;/h1&gt;&lt;p&gt;skipgram  的思想是用中心詞 center word 去預測兩側的 context words &lt;/p&gt;
@@ -161,7 +161,7 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
     <summary type="html">&lt;p&gt;這篇是在 notion 整理的筆記大綱，只提供綱要性的說明&lt;/p&gt;
 &lt;h1 id=&quot;預備知識&quot;&gt;&lt;a href=&quot;#預備知識&quot; class=&quot;headerlink&quot; title=&quot;預備知識&quot;&gt;&lt;/a&gt;預備知識&lt;/h1&gt;&lt;ul&gt;
 &lt;li&gt;&lt;p&gt;language model： NLP 語言模型&lt;/p&gt;
-&lt;p&gt;參閱 &lt;a href=&quot;/NLP/NLP-language-model/&quot; title=&quot;NLP Language Model&quot;&gt;NLP Language Model&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;參閱 &lt;a href=&quot;/NLP-language-model/&quot; title=&quot;NLP Language Model&quot;&gt;NLP Language Model&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;huffman tree&lt;/p&gt;
 &lt;/li&gt;
@@ -247,8 +247,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckklcj2if0007fue29cycf7qx/"/>
-    <id>https://seed9d.github.io/ckklcj2if0007fue29cycf7qx/</id>
+    <link href="https://seed9d.github.io/ckkm3csjq0009zye2duwu1u2m/"/>
+    <id>https://seed9d.github.io/ckkm3csjq0009zye2duwu1u2m/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     
