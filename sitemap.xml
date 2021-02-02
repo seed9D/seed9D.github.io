@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://seed9d.github.io/404.html</loc>
+    
+    <lastmod>2021-02-02</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</loc>
+    
+    <lastmod>2021-02-02</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</loc>
     
     <lastmod>2021-02-02</lastmod>
@@ -86,7 +100,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/</loc>
+    <loc>https://seed9d.github.io/ckko7s3ki000f3ie29v2483lt/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -110,6 +124,13 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/ML/</loc>
+    <lastmod>2021-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/tags/recommendation-system/</loc>
     <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -140,6 +161,13 @@
   
   <url>
     <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
+    <lastmod>2021-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/categories/recommendation-system/</loc>
     <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

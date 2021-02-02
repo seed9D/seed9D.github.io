@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Exploring and ExploitingExploring and Exploiting (EE) 是推薦系統中歷久不衰的議題，如何幫助用戶發現更多感興趣的 entity 以及基於已有對用戶的認知推薦他感興趣的 entity，在推薦系統的實務上都得考慮。 具象化這個問題：在推薦系統中有$\text{}$ $\text{category A, category B, category C,"><meta property="og:type" content="article"><meta property="og:title" content="Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy"><meta property="og:url" content="https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="Exploring and ExploitingExploring and Exploiting (EE) 是推薦系統中歷久不衰的議題，如何幫助用戶發現更多感興趣的 entity 以及基於已有對用戶的認知推薦他感興趣的 entity，在推薦系統的實務上都得考慮。 具象化這個問題：在推薦系統中有$\text{}$ $\text{category A, category B, category C,"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/k4XcKD1.png"><meta property="og:image" content="https://i.imgur.com/WpSNpVB.png"><meta property="og:image" content="https://i.imgur.com/NKVZ91e.png"><meta property="article:published_time" content="2021-02-02T15:35:16.000Z"><meta property="article:modified_time" content="2021-02-02T16:19:57.000Z"><meta property="article:author" content="seed9D"><meta property="article:tag" content="recommendation system"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/k4XcKD1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/"},"headline":"seed9D's blog","image":["https://i.imgur.com/k4XcKD1.png","https://i.imgur.com/WpSNpVB.png","https://i.imgur.com/NKVZ91e.png"],"datePublished":"2021-02-02T15:35:16.000Z","dateModified":"2021-02-02T16:19:57.000Z","author":{"@type":"Person","name":"seed9D"},"description":"Exploring and ExploitingExploring and Exploiting (EE) 是推薦系統中歷久不衰的議題，如何幫助用戶發現更多感興趣的 entity 以及基於已有對用戶的認知推薦他感興趣的 entity，在推薦系統的實務上都得考慮。 具象化這個問題：在推薦系統中有$\\text{}$ $\\text{category A, category B, category C,"}</script><link rel="canonical" href="https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-02</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-03</time></span><span class="level-item"><a class="link-muted" href="/categories/recommendation-system/">recommendation system</a></span><span class="level-item">14 minutes read (About 2027 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><h1 id="Exploring-and-Exploiting"><a href="#Exploring-and-Exploiting" class="headerlink" title="Exploring and Exploiting"></a>Exploring and Exploiting</h1><p><strong>Exploring and Exploiting (EE)</strong> 是推薦系統中歷久不衰的議題，如何幫助用戶發現更多感興趣的 entity 以及基於已有對用戶的認知推薦他感興趣的 entity，在推薦系統的實務上都得考慮。</p>
+<p>具象化這個問題：在推薦系統中有$\text{}$ $\text{category A, category B, category C, category D, category E}$ 等五大類的 entity 集合，今天有個新用戶 $U$來了，我們要如何</p>
+<ol>
+<li>知道他對哪個種類的 entity 比較感興趣？</li>
+<li>人的興趣可以分成長期興趣跟短期興趣，在電商場景中，用戶短期興趣指他有立即需求的商品，我們如何快速抓到他的意圖，調整推薦系統的響應？</li>
+<li>推薦哪些類目能帶給他意料之外的驚喜 ? 那些他沒預期，但我們推薦給他，能讓他感到滿意的 category。</li>
+</ol>
+<p>Multi-armed bandit problem, K-armed bandit problem (MAP) 中的 Thompson Sampling，簡單又實用</p>
+<a id="more"></a>
+<p><a href="https://seed9d.github.io/categories/recommendation-system/">推薦系統相關文章</a></p>
+<h1 id="Thompson-Sampling"><a href="#Thompson-Sampling" class="headerlink" title="Thompson Sampling"></a>Thompson Sampling</h1><blockquote>
+<p>Thompson Sampling 利用了 beta distribution 是 bernoulli distribution 的 conjugacy prior， 來更新 entity 被選中的 posterior probability distribution</p>
+</blockquote>
+<h2 id="從-Beta-distribution-說起"><a href="#從-Beta-distribution-說起" class="headerlink" title="從 Beta distribution 說起"></a>從 Beta distribution 說起</h2><script type="math/tex; mode=display">
+Beta(p|\alpha, \beta) \triangleq  \cfrac{1}{B(\alpha, \beta)} \ p^{\alpha -1} \ (1-p)^{\beta - 1}</script><ul>
+<li>beta function $B(\alpha, \beta)$ is a normalization term ，其作用是使 $\int^1_0 \cfrac{1}{B(\alpha, \beta)} \ p^{\alpha -1} \ (1-p)^{\beta - 1} dp = 1$<ul>
+<li>$B(\alpha, \beta) = \int^1_0 p^{\alpha -1} (1-p)^{\beta -1} dp$</li>
+</ul>
+</li>
+</ul>
+<p>Beta distribution $beta(\alpha, \beta)$ 的期望值很簡潔</p>
+<script type="math/tex; mode=display">
+E[p] = \cfrac{\alpha}{\alpha + \beta}</script><p>我們知道期望值本身是結果的加權平均，如果把 $\alpha$ 視為成功次數， $\beta$ 視為失敗次數，那不就是平均成功率了嗎？</p>
+<p>更神奇的是，平均成功率還可以隨著試驗的失敗跟成功次數變動，依然還是 beta distribution</p>
+<script type="math/tex; mode=display">\cfrac{\alpha + n^{(1)}}{\alpha + \beta + n^{(1)} + n^{(0)}}</script><ul>
+<li>$n^{(1)}$：表新增成功次數</li>
+<li>$n^{(0)}$: 表新增失敗次數</li>
+</ul>
+<p>也因為這個直覺的特性，Beta distribution 非常適合用在估計 打擊率, 點擊率, 命中率 …等等 binary problem</p>
+<h3 id="以推薦系統-click-through-rate-CTR-當例子"><a href="#以推薦系統-click-through-rate-CTR-當例子" class="headerlink" title="以推薦系統 click through rate (CTR) 當例子"></a>以推薦系統 click through rate (CTR) 當例子</h3><p>在推薦系統中，category $A$ 在用戶的點擊率 (ctr) 統計中，所有用戶對 category $A$ :</p>
+<ul>
+<li>$\text{average ctr} = 0.33$</li>
+<li>$\text{ctr variacne} = 0.00147$</li>
+</ul>
+<p>以 $\text{mean=0.33 variacne=0.00147}$  算出 $\alpha \approx50$ $\beta \approx100$， $\alpha =50$ $\beta=100$ 在本推薦系統中的意義是，$\text{category A}$  平均每 150 次 impression ($\alpha + \beta$) 能產生 50 次 click ($\alpha$)，100 次 看了不點 ($\beta$)。</p>
+<p>畫出 PDF</p>
+<p><img src="https://i.imgur.com/k4XcKD1.png" style="zoom:50%;" /></p>
+<ul>
+<li><p>圖中 PDF curve 的意義是，有個人叫做 “平均用戶”，”平均用戶” 對 $\text{category A}$ 最有可能的點擊率是 $0.33$，但不一定是 0.33, 可能比 0.33 高，可能比 0.33 低，但產生 0.33 這個點擊率的 likelihood $L(\theta| X=0.33)$ 最高</p>
+<ul>
+<li>下圖是對  $beta(50, 100)$ sample 500 次，可以看出 $X=0.33$ 附近被 sample 到的次數的確較高</li>
+</ul>
+<p><img src="https://i.imgur.com/WpSNpVB.png" style="zoom:50%;" /></p>
+</li>
+</ul>
+<p>今天來了個新用戶 $U$，我們不知道他對 $\text{category A}$ 的喜好程度怎麼樣，但我們可以利用前面的 “平均用戶” 做為先驗： 150 impression 產生 50 次 click  ($\alpha=50 \ , \beta=100$ )，再透過他後續跟 $\text{category A}$ 的互動修正出 for  $\text{user U}$ 的 $\alpha_U \ \beta_U$。</p>
+<p>假設我們給 $U$ 展示 $\text{category A}$  100 次後， 他 click了 60 次，看了不點 40 次，那他的 beta distribution 變成</p>
+<p>$beta(50 + 60, 100 + 40 ) = beta(110, 140)$</p>
+<p><img src="https://i.imgur.com/NKVZ91e.png" style="zoom:50%;" /></p>
+<p>可以發現橘線變得更尖，且往右移，此時 $mean =0.44$，表示 $user \ U$ 比＂平均用戶＂更加偏好 $\text{category A}$。</p>
+<p>總結以上，一開始我們對於新用戶 $U$ 一無所知，不知道他對 $\text{category A}$ 的偏好，但我們透過已有的先驗，結合他跟推薦系統的互動，慢慢修正對他的認知：</p>
+<script type="math/tex; mode=display">
+\cfrac{\alpha + n^{(1)}}{\alpha + \beta + n^{(1)} + n^{(0)}} = \cfrac{50 + 60}{50 + 100 + 60 + 40} = 0.44</script><ul>
+<li>$n^{(1)}$：對 $\text{category A}$ 新的點擊行為</li>
+<li>$n^{(0)}$: 對 $\text{category A}$ 新的＂看了未點＂的行為</li>
+</ul>
+<p>於是，ctr 從原本 “最有可能” 0.33 修正到 “最有可能” 0.44 。</p>
+<ul>
+<li>“最有可能”: 因爲一切都是 distribution 阿</li>
+</ul>
+<p>這個神奇又簡潔的現象背後的數學原理，正是 beta distribution 的 conjugacy 特性。</p>
+<h2 id="Conjugate-prior-amp-Bayesian-inference"><a href="#Conjugate-prior-amp-Bayesian-inference" class="headerlink" title="Conjugate prior &amp; Bayesian inference"></a>Conjugate prior &amp; Bayesian inference</h2><blockquote>
+<p>prior $p(\theta)$ is conjugate to the  likelihood function $p(X|\theta)$ when the posterior $p(\theta|X)$ has the same function form as the prior</p>
+</blockquote>
+<script type="math/tex; mode=display">p(\theta|X) = \cfrac{p(X|\theta)  p(\theta)}{p(X)}  \Leftrightarrow  \text{posterior} = \cfrac{\text{likelihood} \cdot \text{prior}}{\text{evidence}}</script><ul>
+<li><p>$p(X)$ is the normalization term</p>
+<p>$p(X) = \int_{\theta\in \Theta}p(X|\theta)p(\theta)d\theta$</p>
+</li>
+</ul>
+<p>即是</p>
+<ul>
+<li>prior $p(\theta)$  為 beta distribution $Beta(\theta|\alpha, \beta) = \cfrac{1}{B(\alpha, \beta)} \ \theta^{\alpha -1} \ (1-\theta)^{\beta - 1}$</li>
+<li>likelihood function $p(X|\theta)$ 為 bernoulli distribution   $Bern(c|\theta) = \theta^c(1-\theta)^{1-c}$</li>
+</ul>
+<p>beta distribution 與 bernoulli distribution 都有類似的 form: $\theta^m(1-\theta)^n$ ，同時 posterior distribution $p(\theta|X)$ 也是 beta distribution</p>
+<p>posterior  $p(\theta|X)$ 也是 beta distribution 證明如下</p>
+<h3 id="Proof"><a href="#Proof" class="headerlink" title="Proof"></a>Proof</h3><p>假設  </p>
+<ul>
+<li><p>推薦系統中，對 $category \ A$ 曝光 $N$ 次，用戶 $U$ 點擊次數 $n^{(1)}$，未點擊次數 $n^{(0)}$，本質上是個 $N \ bernoulli \ trail$ ， 所以其 likelihood function：</p>
+<p>$p(C|p) =\prod_{i=1}^n p(C=c_i|p)= p^{n^{(1)}}(1-p)^{n^{(0)}}$ (忽略係數)</p>
+<ul>
+<li>$C$ 是 outcome, $c=1$ for positive ; $c=0$ for negative</li>
+</ul>
+</li>
+<li><p>$prior$ $p(p)$ 為 beta distribution :</p>
+<script type="math/tex; mode=display">
+p(p|\alpha, \beta) =  Beta(p|\alpha, \beta) = \cfrac{1}{B(\alpha, \beta)} \ p^{\alpha -1} \ (1-p)^{\beta - 1}</script></li>
+</ul>
+<p>則 $\text{posterior}$  $p(p|C,\alpha, \beta) = \cfrac{ p(C|p) \ p(p|\alpha, \beta)}{\int^1_0  p(C|p) \ p(p|\alpha, \beta) \ dp}$ </p>
+<p>分母項 $\int^1_0  p(C|p) \ p(p|\alpha, \beta) \ dp$  作用為 normalize the distribution，通常用 $Z$ 代表：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p(p|C,\alpha, \beta)  
+&= \cfrac{ p(C|p)  p(p|\alpha, \beta)}{\int^1_0  p(C|p)  p(p|\alpha, \beta) dp} \\
+&= \cfrac{p^{n^{(1)}} (1-p)^{n^{(0)}} \cfrac{1}{B(\alpha,\beta)} p^{\alpha -1} (1-p)^{\beta -1}}{Z} \\ 
+&= \cfrac{p^{[n^{(1)} + \alpha] -1} (1 - p) ^{[n^{(0)} + \beta]-1}}{B(\alpha, \beta) Z} 
+\end{aligned}</script><ul>
+<li>$Z =\cfrac{1}{B(\alpha,\beta)} \int^1_0 p^{n^{(1)}} (1-p)^{n^{(0)}}  p^{\alpha -1} (1-p)^{\beta -1} dp$</li>
+</ul>
+<p>分母要 normalize 整個 probability distribution 使  $\int p(p|C,\alpha, \beta) dp= 1$</p>
+<p>而新的 normalization 項為 </p>
+<script type="math/tex; mode=display">
+B(\alpha,\beta)Z =  \int^1_0 p^{[n^{(1)} + \alpha] -1} (1 - p) ^{[n^{(0)} + \beta]-1}dp</script><p>這不正是另一個 Beta function:  $B(n^{(1)} + \alpha , n^{(0) } +\beta)$ ？？</p>
+<p>所以  $p(p|C,\alpha, \beta)$  最終化簡成</p>
+<script type="math/tex; mode=display">
+\begin{aligned} p(p|C,\alpha, \beta)  &= \cfrac{p^{[n^{(1)} + \alpha] -1} (1 - p) ^{[n^{(0)} + \beta]-1}}{B(n^{(1)} + \alpha , n^{(0) } +\beta)} \\ &= Beta (p|n^{(1)} +\alpha, n^{(0)} + \beta)\end{aligned}</script><p>故得證 $\text{posterior}$ $p(p|C,\alpha, \beta)$  也是 $\text{Beta distribution}$</p>
+<h1 id="Implement"><a href="#Implement" class="headerlink" title="Implement"></a>Implement</h1><p>一個簡單的實作方式是</p>
+<ol>
+<li>先在線下計算好每個 category 的 ctr mean 跟 variance。</li>
+<li>在實時推薦時，拿回某用戶近期對每個 category 交互數據 impression 與 click ，計算出新的  $\alpha  \ \beta$。</li>
+<li>有了每個類目的 $\alpha \ \beta$ 後，對每個類目的 $beta(\alpha, \beta)$ sampling，接著取出 sample 後 top K 的類目即可。</li>
+<li>C2I 召回 …..</li>
+</ol>
+<p>當然，你也可以不基於 category 維度計算 beta distribution，而是基於每一個 entity。不過如果 entity 數量上百萬，這顯然不切實際。</p>
+<h2 id="線下"><a href="#線下" class="headerlink" title="線下"></a>線下</h2><h3 id="統計每個-category-CTR-的-variance-and-mean"><a href="#統計每個-category-CTR-的-variance-and-mean" class="headerlink" title="統計每個 category CTR 的 variance and mean"></a>統計每個 category CTR 的 variance and mean</h3><ul>
+<li>Spark snippets</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calAvgAndVar</span></span>(input: <span class="type">Dataset</span>[<span class="type">Row</span>], categoryCol: <span class="type">String</span>): <span class="type">Dataset</span>[<span class="type">Row</span>] =</span><br><span class="line">    input.select(categoryCol, ctrCol)</span><br><span class="line">      .groupBy(categoryCol).agg(</span><br><span class="line">	      fn.avg(fn.col(ctrCol)).as(<span class="string">&quot;ctr_avg&quot;</span>),</span><br><span class="line">	      fn.variance(ctrCol).alias(<span class="string">&quot;ctr_var&quot;</span>))</span><br><span class="line">      .na.drop</span><br><span class="line">      .withColumnRenamed(categoryCol, <span class="string">&quot;categoryId&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="線上"><a href="#線上" class="headerlink" title="線上"></a>線上</h2><ol>
+<li><p>計算每個 category 的初始 $\alpha_0 \ \beta_0$</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ImmutablePair&lt;Double, Double&gt; <span class="title">calAlphaAndBeta</span><span class="params">(<span class="keyword">double</span> ctrMean, <span class="keyword">double</span> ctrVar)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">double</span> alpha = (((<span class="number">1</span> - ctrMean) / (ctrMean)) - <span class="number">1</span> / ctrMean) * Math.pow(ctrMean, <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">double</span> beta = alpha * ((<span class="number">1</span> / ctrMean) - <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">return</span> ImmutablePair.of(alpha, beta);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<script type="math/tex; mode=display">\begin{aligned}
+\alpha &=\left(\frac{1-\mu}{\sigma^2}-\frac{1}{\mu}\right)\mu^2 
+\\
+\beta &= \alpha\left(\frac{1}{\mu}-1\right)
+\end{aligned}</script></li>
+<li><p>取回用戶的近期 category 交互行為 impression and click，並計算新的 $\alpha_t,\ \beta_t$</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* left: alpha, right: beta */</span></span><br><span class="line">ImmutablePair&lt;Double, Double&gt; prior = calAlphaAndBeta(<span class="keyword">double</span> ctrMean, <span class="keyword">double</span> ctrVar);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* left: impression, right: click */</span></span><br><span class="line">ImmutablePair&lt;Integer, Integer&gt; posteriorPair = posteriorData.getOrDefault(cateId, ImmutablePair.of(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> clickCount = posteriorPair.getRight();</span><br><span class="line"><span class="keyword">int</span> impressionCount = posteriorPair.getLeft();</span><br><span class="line"><span class="keyword">int</span> impressionWithoutClick = (impressionCount - clickCount) &gt; <span class="number">0</span> ? (impressionCount - clickCount) : impressionCount;</span><br><span class="line"></span><br><span class="line"><span class="keyword">double</span> newAlpha = prior.getLeft() + clickCount;</span><br><span class="line"><span class="keyword">double</span> newBeta =  prior.getRight() + impressionWithoutClick;</span><br></pre></td></tr></table></figure></li>
+<li><p>對每個 category 的 beta distribution $beta(\alpha, \beta)$ sampling</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.math3.distribution.BetaDistribution;</span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">calBetaProbability</span><span class="params">(<span class="keyword">double</span> alpha, <span class="keyword">double</span> beta)</span> </span>&#123;</span><br><span class="line">	  BetaDistribution betaDistribution = <span class="keyword">new</span> BetaDistribution(alpha, beta);</span><br><span class="line">    <span class="keyword">double</span> rand = Math.random();</span><br><span class="line">    <span class="keyword">return</span> betaDistribution.inverseCumulativeProbability(rand);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>sampling 利用 beta distribution 的 inverse cumulative distribution function (inverse CDF) sampling 出 random variable<ul>
+<li>參考 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Inverse_transform_sampling">https://en.wikipedia.org/wiki/Inverse_transform_sampling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>Multi-Armed Bandit With Thompson Sampling <a target="_blank" rel="noopener" href="https://predictivehacks.com/multi-armed-bandit-with-thompson-sampling/">https://predictivehacks.com/multi-armed-bandit-with-thompson-sampling/</a></li>
+<li>Conjugacy in Bayesian Inference <a target="_blank" rel="noopener" href="http://gregorygundersen.com/blog/2019/03/16/conjugacy/">http://gregorygundersen.com/blog/2019/03/16/conjugacy/</a></li>
+<li>Understanding the beta distribution (using baseball statistics) <a target="_blank" rel="noopener" href="http://varianceexplained.org/statistics/beta_distribution_and_baseball/">http://varianceexplained.org/statistics/beta_distribution_and_baseball/</a><ul>
+<li>中文翻譯 : 如何通俗理解 beta 分布？ - 小杰的回答 - 知乎 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/30269898/answer/123261564">https://www.zhihu.com/question/30269898/answer/123261564</a></li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a></li>
+<li>Heinrich, G. (2005). Parameter estimation for text analysis<ul>
+<li>雖然是講 LDA，但前面從 ML MAP 一路推導到 Bayesian inference ，很詳細</li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</p><p><a href="https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/">https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-02</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-03</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/recommendation-system/">recommendation system </a></div></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/"><span class="level-item">Pytorch 實作 CBOW with Hierarchical Softmax</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "7e342fd5cc24bd0e8bcc4d5c09cd0147",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Exploring-and-Exploiting"><span class="level-left"><span class="level-item">Exploring and Exploiting</span></span></a></li><li><a class="level is-mobile" href="#Thompson-Sampling"><span class="level-left"><span class="level-item">Thompson Sampling</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從-Beta-distribution-說起"><span class="level-left"><span class="level-item">從 Beta distribution 說起</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#以推薦系統-click-through-rate-CTR-當例子"><span class="level-left"><span class="level-item">以推薦系統 click through rate (CTR) 當例子</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Conjugate-prior-amp-Bayesian-inference"><span class="level-left"><span class="level-item">Conjugate prior &amp; Bayesian inference</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Proof"><span class="level-left"><span class="level-item">Proof</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Implement"><span class="level-left"><span class="level-item">Implement</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#線下"><span class="level-left"><span class="level-item">線下</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#統計每個-category-CTR-的-variance-and-mean"><span class="level-left"><span class="level-item">統計每個 category CTR 的 variance and mean</span></span></a></li></ul></li><li><a class="level is-mobile" href="#線上"><span class="level-left"><span class="level-item">線上</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-02T15:35:16.000Z">2021-02-02</time></p><p class="title"><a href="/Implement-Thompson-Sampling-in-Recommendation-System/">Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:25:31.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/">Pytorch 實作 CBOW with Hierarchical Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:15:36.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/">Pytorch 實作 Skipgram with Negative Sampling</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:03:30.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Naive-Word2Vec-with-Softmax/">Pytorch 實作 Word2Vec with Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-24T15:05:45.000Z">2021-01-24</time></p><p class="title"><a href="/negative-sampling-in-word2vec/">Negative Sampling 背後的數學</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">11</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">5</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

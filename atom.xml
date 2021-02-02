@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-02T15:24:08.000Z</updated>
+  <updated>2021-02-02T16:19:57.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</title>
+    <link href="https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/"/>
+    <id>https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</id>
+    <published>2021-02-02T15:35:16.000Z</published>
+    <updated>2021-02-02T16:19:57.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Exploring-and-Exploiting&quot;&gt;&lt;a href=&quot;#Exploring-and-Exploiting&quot; class=&quot;headerlink&quot; title=&quot;Exploring and Exploiting&quot;&gt;&lt;/a&gt;Exploring and Exploiting&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;Exploring and Exploiting (EE)&lt;/strong&gt; 是推薦系統中歷久不衰的議題，如何幫助用戶發現更多感興趣的 entity 以及基於已有對用戶的認知推薦他感興趣的 entity，在推薦系統的實務上都得考慮。&lt;/p&gt;
+&lt;p&gt;具象化這個問題：在推薦系統中有$\text{}$ $\text{category A, category B, category C, category D, category E}$ 等五大類的 entity 集合，今天有個新用戶 $U$來了，我們要如何&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;知道他對哪個種類的 entity 比較感興趣？&lt;/li&gt;
+&lt;li&gt;人的興趣可以分成長期興趣跟短期興趣，在電商場景中，用戶短期興趣指他有立即需求的商品，我們如何快速抓到他的意圖，調整推薦系統的響應？&lt;/li&gt;
+&lt;li&gt;推薦哪些類目能帶給他意料之外的驚喜 ? 那些他沒預期，但我們推薦給他，能讓他感到滿意的 category。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Multi-armed bandit problem, K-armed bandit problem (MAP) 中的 Thompson Sampling，簡單又實用&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/categories/recommendation-system/"/>
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/tags/recommendation-system/"/>
+    
+  </entry>
   
   <entry>
     <title>Pytorch 實作 CBOW with Hierarchical Softmax</title>
@@ -247,8 +273,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/"/>
-    <id>https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/</id>
+    <link href="https://seed9d.github.io/ckko7s3ki000f3ie29v2483lt/"/>
+    <id>https://seed9d.github.io/ckko7s3ki000f3ie29v2483lt/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     
