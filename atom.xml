@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-01-31T15:53:56.000Z</updated>
+  <updated>2021-02-02T15:24:08.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/"/>
     <id>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</id>
     <published>2021-01-31T15:25:31.000Z</published>
-    <updated>2021-01-31T15:53:56.000Z</updated>
+    <updated>2021-02-02T15:24:08.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;CBOW-with-Hierarchical-Softmax&quot;&gt;&lt;a href=&quot;#CBOW-with-Hierarchical-Softmax&quot; class=&quot;headerlink&quot; title=&quot;CBOW with Hierarchical Softmax&quot;&gt;&lt;/a&gt;CBOW with Hierarchical Softmax&lt;/h1&gt;&lt;p&gt;CBOW  的思想是用兩側 context words 去預測中間的 center word&lt;/p&gt;
@@ -247,8 +247,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckkm3csjq0009zye2duwu1u2m/"/>
-    <id>https://seed9d.github.io/ckkm3csjq0009zye2duwu1u2m/</id>
+    <link href="https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/"/>
+    <id>https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     

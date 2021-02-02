@@ -2,14 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</loc>
+    <loc>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</loc>
     
-    <lastmod>2021-01-31</lastmod>
+    <lastmod>2021-02-02</lastmod>
     
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</loc>
+    <loc>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</loc>
     
     <lastmod>2021-01-31</lastmod>
     
@@ -86,7 +86,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/ckkm3csjq0009zye2duwu1u2m/</loc>
+    <loc>https://seed9d.github.io/ckko5llfj000ayie2eoq25bbj/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -102,7 +102,7 @@
 
   <url>
     <loc>https://seed9d.github.io/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -110,28 +110,28 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/ML/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/NLP/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/word-embedding/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/pytorch/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -140,14 +140,14 @@
   
   <url>
     <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/NLP/</loc>
-    <lastmod>2021-02-01</lastmod>
+    <lastmod>2021-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
