@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
+    <lastmod>2021-02-09</lastmod>
+  </url>
+  <url>
+    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
+    <lastmod>2021-02-09</lastmod>
+  </url>
+  <url>
+    <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>
+    <lastmod>2021-02-09</lastmod>
+  </url>
+  <url>
     <loc>https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</loc>
     <lastmod>2021-02-02</lastmod>
   </url>
@@ -37,11 +49,7 @@
     <lastmod>2021-01-25</lastmod>
   </url>
   <url>
-    <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>
-    <lastmod>2021-01-24</lastmod>
-  </url>
-  <url>
-    <loc>https://seed9d.github.io/ckko845tp000fhue2agdjd7gp/</loc>
+    <loc>https://seed9d.github.io/ckky7073i000fsxe298cp6ib4/</loc>
     <lastmod>2021-01-18</lastmod>
   </url>
 </urlset> 

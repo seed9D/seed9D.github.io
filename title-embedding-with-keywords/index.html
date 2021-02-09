@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>內容推薦 (2) Title Embedding with Keyword - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="前言在前篇 內容推薦 (1) 關鍵詞識別 中，我們利用 entropy 從商品池的 title  中辨識出 product word  &amp;amp; label word   此篇，我們將利用已經辨識出的 product word &amp;amp; label word 回頭對商品池中的商品 title 做 embedding 當然你也可以直接將所有 title 送進 Word2Vec 硬 train 一"><meta property="og:type" content="article"><meta property="og:title" content="內容推薦 (2) Title Embedding with Keyword"><meta property="og:url" content="https://seed9d.github.io/title-embedding-with-keywords/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="前言在前篇 內容推薦 (1) 關鍵詞識別 中，我們利用 entropy 從商品池的 title  中辨識出 product word  &amp;amp; label word   此篇，我們將利用已經辨識出的 product word &amp;amp; label word 回頭對商品池中的商品 title 做 embedding 當然你也可以直接將所有 title 送進 Word2Vec 硬 train 一"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/EXzpEKq.jpg"><meta property="article:published_time" content="2021-02-09T15:49:29.000Z"><meta property="article:modified_time" content="2021-02-09T16:28:23.000Z"><meta property="article:author" content="seed9D"><meta property="article:tag" content="recommendation system"><meta property="article:tag" content="NLP"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/EXzpEKq.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/title-embedding-with-keywords/"},"headline":"seed9D's blog","image":["https://i.imgur.com/EXzpEKq.jpg"],"datePublished":"2021-02-09T15:49:29.000Z","dateModified":"2021-02-09T16:28:23.000Z","author":{"@type":"Person","name":"seed9D"},"description":"前言在前篇 內容推薦 (1) 關鍵詞識別 中，我們利用 entropy 從商品池的 title  中辨識出 product word  &amp; label word   此篇，我們將利用已經辨識出的 product word &amp; label word 回頭對商品池中的商品 title 做 embedding 當然你也可以直接將所有 title 送進 Word2Vec 硬 train 一"}</script><link rel="canonical" href="https://seed9d.github.io/title-embedding-with-keywords/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>內容推薦 (2) Title Embedding with Keyword</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-09</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-10</time></span><span class="level-item"><a class="link-muted" href="/categories/recommendation-system/">recommendation system</a></span><span class="level-item">11 minutes read (About 1682 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在前篇 <a href="/recognize-keywords-by-entorpy/" title="內容推薦 (1) 關鍵詞識別">內容推薦 (1) 關鍵詞識別</a> 中，我們利用 entropy 從商品池的 title  中辨識出 product word  &amp; label word  </p>
+<p>此篇，我們將利用已經辨識出的 product word &amp; label word 回頭對商品池中的商品 title 做 embedding</p>
+<p>當然你也可以直接將所有 title 送進 Word2Vec 硬 train 一發，然後對 title 內的所有的 word vectors 取平均得到 title vector。</p>
+<a id="more"></a>
+<p><a href="https://seed9d.github.io/categories/recommendation-system/">推薦系統相關文章</a></p>
+<h1 id="Weight-Keyword-Embedding"><a href="#Weight-Keyword-Embedding" class="headerlink" title="Weight Keyword Embedding"></a>Weight Keyword Embedding</h1><p>假設我們有一個 title ，我們希望能根據 word 在 title 中的重要程度將他 embedding 化，要怎麼做？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;summer fisherman hat female outdoor sun hat sun hat japanese student basin hat watch travel fishing sun hat male&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="從-CBOW-說起"><a href="#從-CBOW-說起" class="headerlink" title="從 CBOW 說起"></a>從 CBOW 說起</h2><p>CBOW  的思想是用兩側 context words 去預測中間的 center word</p>
+<script type="math/tex; mode=display">P(center|context;\theta)</script><p>換句話說，給定 context words 集合 $w_{I,C}$， word $w_j$ 是 center word $w_O$ 的 probability 越大 是否代表 $w_j$ 在 context $C$ 中越關鍵？</p>
+<script type="math/tex; mode=display">P(w_O = w_j |w_{I,C};\theta)</script><p>如果上面的推測成立的話，CBOW 在 Hierarchical Softmax 下的  objective function: negative log likelihood  </p>
+<script type="math/tex; mode=display">
+\begin{aligned} &
+
+-\log p(w_O| w_I) = 
+-\log \dfrac{\text{exp}({h^\top \text{v}'_O})}{\sum_{w_i \in V} \text{exp}({h^\top \text{v}'_{w_i}})} \\
+
+
+& = - \sum^{L(w_O)-1}_{l=1}  \log\sigma([ \cdot] h^\top \text{v}^{'}_l)
+
+\end{aligned} \tag{1}</script><ul>
+<li>CBOW with Hierarchical Softmax 有兩個 matrix $W$  and $W’$<ul>
+<li>$W$ 的 row vector 對應到 word $w_i$ 的 vector</li>
+<li>$W’$ 對應的是 huffman tree non-leaf node 的 vector</li>
+<li>參見  <a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/" title="Pytorch 實作 CBOW with Hierarchical Softmax">Pytorch 實作 CBOW with Hierarchical Softmax</a></li>
+</ul>
+</li>
+<li>$\text{v}’_j$  表 output side matrix $W’$  中  j-th columns  vector，跟任何 word 沒一對一對應關係</li>
+<li>$L(w_i) -1$ 表 huffman tree 中從 root node  到 leaf node of $w_i$ 的 node number</li>
+<li>$[ \cdot ]$表 huffman tree 的分岔判斷<ul>
+<li>$[ \cdot ] = 1$ 表 turn left</li>
+<li>$[ \cdot ] = -1$ 表 turn right</li>
+</ul>
+</li>
+<li>$h = \frac {1}{C} \sum^{C}_{j=1}\text{v}_{w_{I,j}}$ average of all context word vector $w_{I,j}$</li>
+</ul>
+<p>Score function $\log p(w_O| w_I)$ <strong>(沒負號)，</strong> 本質上是對 output word $w_O$ 的打分。</p>
+<p>先改寫一下 score function，等等會用到</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+\log p(w_O| w_I) &= \sum^{L(w_O)-1}_{l=1}\log\sigma([ \cdot] h^\top  \text{v}^{'}_l)  \\
+&= \sum^{L(w_O)-1}_{l=1} \log(\cfrac{1}{1+ \exp^{- [ \cdot] h^{\top} v_l^{'}}}) \\
+
+&= \sum^{L(w_O)-1}_{l=1} [\log(1) -\log(1+ \exp^{- [ \cdot] h^{\top} v_l^{'}}) ]\\
+
+& = \sum^{L(w_O)-1}_{l=1}-\log(1 + \exp^{- [ \cdot] h^{\top} v_l^{'}}) 
+
+
+\end{aligned} \tag{2}</script><p>有了 式(2) score function ，給定一 title words 集合 $w_{T}$ 只要對 title 裡的每個 word  $w_j \in w_{T}$  ，令 $\log p(w_O=w_j|w_I = w_{T, \lnot j})$，進行打分即可得到每個  word $w_j$ 在 title 裡的重要程度 </p>
+<script type="math/tex; mode=display">\text{weight}_j = \log p(w_O=w_j|w_I = w_{T, \lnot j}) \tag{3}</script><p>而我們要的 title embedding 即 weighted sum of words in title</p>
+<script type="math/tex; mode=display">\text{v}_{\text{title}} = \sum_{w_j \in w_T}\text{weight}_j \times \text{v}_{w_{j}} \tag{4}</script><ul>
+<li>$w_T$: 某 title 的 word 集合</li>
+<li>$\text{v}_{w_{j}}$: word  $w_j$ 對應 matrix $W$ 中 row vector</li>
+</ul>
+<h2 id="Gensim-實作"><a href="#Gensim-實作" class="headerlink" title="Gensim 實作"></a>Gensim 實作</h2><h3 id="Train-CBOW-HS"><a href="#Train-CBOW-HS" class="headerlink" title="Train CBOW + HS"></a>Train CBOW + HS</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> Word2Vec</span><br><span class="line">w2v_model = Word2Vec(</span><br><span class="line">        min_count=<span class="number">3</span>,</span><br><span class="line">        window=<span class="number">5</span>,</span><br><span class="line">        size=<span class="number">100</span>,</span><br><span class="line">        alpha=<span class="number">0.005</span>,</span><br><span class="line">        min_alpha=<span class="number">0.0007</span>,</span><br><span class="line">        hs=<span class="number">1</span>,</span><br><span class="line">        sg=<span class="number">0</span>,</span><br><span class="line">        workers=<span class="number">4</span>,</span><br><span class="line">        batch_words=<span class="number">100</span>,</span><br><span class="line">        cbow_mean = <span class="number">1</span></span><br><span class="line">    )</span><br><span class="line">w2v_model.build_vocab(corpus) <span class="comment"># build huffman tree</span></span><br><span class="line">w2v_model.train(</span><br><span class="line">        corpus,</span><br><span class="line">        total_examples=w2v_model.corpus_count,</span><br><span class="line">        epochs=<span class="number">50</span>,</span><br><span class="line">        report_delay=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>corpus 裡的每個 title，應該已經先行合併 bigram and trigram 的 product &amp; label 詞 ，最好可以去除無用詞，如下 sentence，某些 words 已合併 :</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;hyuna_style ins cute wild sunscreen female hand sleeves arm_guard ice_silk sleeves driving anti_ultraviolet ice gloves tide&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Scoring-Words-in-Title"><a href="#Scoring-Words-in-Title" class="headerlink" title="Scoring Words in Title"></a>Scoring Words in Title</h3><p>訓練完 model  後，對每個 title 內的 words 重要性進行評分:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cal_log_probs</span>(<span class="params">model, target_w, context_embd: np.ndarray</span>)-&gt; np.ndarray:</span></span><br><span class="line">    turns = (-<span class="number">1.0</span>) ** target_w.code</span><br><span class="line">    path_embd = model.trainables.syn1[target_w.point]</span><br><span class="line">    log_probs = -np.logaddexp(<span class="number">0</span>, -turns * np.dot(context_embd, path_embd.T))</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(log_probs)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>為 式 (2)  的實現，實際上就是 gensim Word2Vec 內的  score_cbow_pair</li>
+<li>word 在 huffman tree  的 path code 是 0/1 code，使用時須轉換成 -1 or 1</li>
+<li>model.trainables.syn1 即 $W’$ ，存放  huffman tree non-leaf node 的 vector</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_cal_keyword_score</span>(<span class="params">model, sentence:List[<span class="built_in">str</span>]</span>) -&gt; Dict[str, float]:</span></span><br><span class="line">    word_vocabs = [model.wv.vocab[w] <span class="keyword">for</span> w <span class="keyword">in</span> sentence <span class="keyword">if</span> w <span class="keyword">in</span> model.wv.vocab]</span><br><span class="line">    </span><br><span class="line">    word_importance = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> pos_center, center_w <span class="keyword">in</span> <span class="built_in">enumerate</span>(word_vocabs):</span><br><span class="line">        context_w_indices = [w.index <span class="keyword">for</span> pos_w, w <span class="keyword">in</span> <span class="built_in">enumerate</span>(word_vocabs) <span class="keyword">if</span> pos_center != pos_w]</span><br><span class="line">        context_embed = np.mean(model.wv.vectors[context_w_indices], axis=<span class="number">0</span>)</span><br><span class="line">        log_probs = cal_log_probs(model, center_w, context_embed)</span><br><span class="line">        </span><br><span class="line">        center_w_term = w2v_model.wv.index2word[center_w.index]</span><br><span class="line">        word_importance[center_w_term] = word_importance.get(center_w_term, <span class="number">0</span>) + log_probs</span><br><span class="line">    <span class="keyword">return</span> word_importance</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cal_keyword_score</span>(<span class="params">model, sentence: List[<span class="built_in">str</span>]</span>) -&gt; np.ndarray:</span></span><br><span class="line">    word_importance = _cal_keyword_score(model, sentence)</span><br><span class="line">    ds = pd.Series(word_importance).sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line">    </span><br><span class="line">    scalar = MinMaxScaler(feature_range=(<span class="number">0.1</span>, <span class="number">1</span>))</span><br><span class="line">    array = ds.to_numpy()</span><br><span class="line">    array = scalar.fit_transform(array.reshape(array.shape[<span class="number">0</span>], -<span class="number">1</span>))</span><br><span class="line">    ds = pd.Series(array.reshape(-<span class="number">1</span>, ), index=ds.index)</span><br><span class="line">    <span class="keyword">return</span> ds</span><br></pre></td></tr></table></figure>
+<ul>
+<li>model.wv.vectors 存放 $W$，即訓練完後每個  word 的 vector</li>
+<li>MinMaxScaler: 縮放到 0.1  到  1 是為了方便觀察</li>
+</ul>
+<p>使用方式如下</p>
+<p>In:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sent = corpus_with_bigram_trigram[<span class="number">7676</span>]</span><br><span class="line">ds = cal_keyword_score(w2v_model, sent)</span><br><span class="line">print(sent), print(ds)</span><br></pre></td></tr></table></figure>
+<p>Out:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;haining&#x27;</span>, <span class="string">&#x27;leather&#x27;</span>, <span class="string">&#x27;male&#x27;</span>, <span class="string">&#x27;stand_collar&#x27;</span>, <span class="string">&#x27;middle_aged&#x27;</span>, <span class="string">&#x27;coat&#x27;</span>, <span class="string">&#x27;fur&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;winter&#x27;</span>, <span class="string">&#x27;cashmere&#x27;</span>, <span class="string">&#x27;thick&#x27;</span>, <span class="string">&#x27;money&#x27;</span>, <span class="string">&#x27;father_loaded&#x27;</span>]</span><br><span class="line">coat             <span class="number">1.000000</span></span><br><span class="line">leather          <span class="number">0.874738</span></span><br><span class="line">fur              <span class="number">0.861750</span></span><br><span class="line">middle_aged      <span class="number">0.812752</span></span><br><span class="line">winter           <span class="number">0.773609</span></span><br><span class="line">male             <span class="number">0.734654</span></span><br><span class="line">stand_collar     <span class="number">0.699505</span></span><br><span class="line">thick            <span class="number">0.676800</span></span><br><span class="line">cashmere         <span class="number">0.642869</span></span><br><span class="line">one              <span class="number">0.546631</span></span><br><span class="line">haining          <span class="number">0.457806</span></span><br><span class="line">father_loaded    <span class="number">0.393533</span></span><br><span class="line">money            <span class="number">0.100000</span></span><br><span class="line">dtype: float64</span><br></pre></td></tr></table></figure>
+<h3 id="Weighted-Sum-of-Word-Vectors"><a href="#Weighted-Sum-of-Word-Vectors" class="headerlink" title="Weighted Sum of Word Vectors"></a>Weighted Sum of Word Vectors</h3><p>從 w2v_model 中取出某 title 內所有 words 的 vector 做 weighed sum</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">weighted_sum_w2v</span>(<span class="params">w2v_model, ds: pd.Series</span>) -&gt; np.ndarray:</span></span><br><span class="line">    ds_  = ds.copy() / <span class="built_in">sum</span>(ds)</span><br><span class="line">    w2v = w2v_model.wv[ds_.index]</span><br><span class="line">    weights = np.expand_dims(ds_.to_numpy(), <span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>((w2v * weights), axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>得出的 title vector is un-normalized ，要使用前得先  L2-norm</li>
+</ul>
+<p>參閱 bible 做的示例 notebook <a target="_blank" rel="noopener" href="https://github.com/seed9D/hands-on-machine-learning/blob/main/Embedding/embeddng_with_keyword_CBOW_HS.ipynb">seed9D/hands-on-machine-learning</a></p>
+<h1 id="Title-Embedding-應用"><a href="#Title-Embedding-應用" class="headerlink" title="Title Embedding 應用"></a>Title Embedding 應用</h1><p>title embedding 最直覺的應用是 content I2I，用戶點擊了 商品 A，我們就可以透過 商品 A 的 title vector 召回 TopK 個最相似 title 的商品推薦給他。</p>
+<p>而 title embedding with keyword weighting 中，我們將 product word 與 label word 在 title 中的重要程度進行 weighted sum，能更準確的表達 title 的意思，不再只是簡單的對 word vector 取平均，連一些無用詞的 vector 也混進去。</p>
+<p>不過 title embedding 在推薦的效果不如利用用戶交互數據訓練出來的 embedding，但因爲每個商品一定會有 title， 很適合作為商品冷啟動召回策略之一使用。在我負責的推薦應用裡，也是利用 title embedding 關聯新商品到有交互數據的舊商品上後讓新商品取得曝光機會。</p>
+<p>title embedding 結合 label 詞 &amp; product 詞的另一個業務應用就是卡片式的主題推薦，類似淘寶上的一個頁面就講一個購物主題，選定一個主題 (ex: 旅遊)與某樣你曾經互動過商品進行推薦</p>
+<p><img src="https://i.imgur.com/EXzpEKq.jpg" alt="" style="zoom:33%;" /></p>
+<p>這個算法側的實作不難，留到下次說吧</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>【不可思议的Word2Vec】 3.提取关键词 <a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/4316">https://spaces.ac.cn/archives/4316</a><ul>
+<li>以 skipgram  角度計算</li>
+</ul>
+</li>
+<li>my post<ul>
+<li><a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/" title="Pytorch 實作 CBOW with Hierarchical Softmax">Pytorch 實作 CBOW with Hierarchical Softmax</a></li>
+<li><a href="/hierarchical-softmax-in-word2vec/" title="Hierarchical Softmax 背後的數學">Hierarchical Softmax 背後的數學</a></li>
+</ul>
+</li>
+<li>gensim<ul>
+<li><a target="_blank" rel="noopener" href="https://www.kdnuggets.com/2018/04/robust-word2vec-models-gensim.html">https://www.kdnuggets.com/2018/04/robust-word2vec-models-gensim.html</a></li>
+<li>Gensim Word2Vec Tutorial [<a target="_blank" rel="noopener" href="https://www.kaggle.com/pierremegret/gensim-word2vec-tutorial">https://www.kaggle.com/pierremegret/gensim-word2vec-tutorial</a></li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>內容推薦 (2) Title Embedding with Keyword</p><p><a href="https://seed9d.github.io/title-embedding-with-keywords/">https://seed9d.github.io/title-embedding-with-keywords/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-09</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-10</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/recommendation-system/">recommendation system, </a><a class="link-muted" rel="tag" href="/tags/NLP/">NLP </a></div></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/recognize-keywords-by-entorpy/"><span class="level-item">內容推薦 (1) 關鍵詞識別</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "543b3167617bc42d4a2a954254a03c20",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#前言"><span class="level-left"><span class="level-item">前言</span></span></a></li><li><a class="level is-mobile" href="#Weight-Keyword-Embedding"><span class="level-left"><span class="level-item">Weight Keyword Embedding</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從-CBOW-說起"><span class="level-left"><span class="level-item">從 CBOW 說起</span></span></a></li><li><a class="level is-mobile" href="#Gensim-實作"><span class="level-left"><span class="level-item">Gensim 實作</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Train-CBOW-HS"><span class="level-left"><span class="level-item">Train CBOW + HS</span></span></a></li><li><a class="level is-mobile" href="#Scoring-Words-in-Title"><span class="level-left"><span class="level-item">Scoring Words in Title</span></span></a></li><li><a class="level is-mobile" href="#Weighted-Sum-of-Word-Vectors"><span class="level-left"><span class="level-item">Weighted Sum of Word Vectors</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Title-Embedding-應用"><span class="level-left"><span class="level-item">Title Embedding 應用</span></span></a></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-09T15:49:29.000Z">2021-02-09</time></p><p class="title"><a href="/title-embedding-with-keywords/">內容推薦 (2) Title Embedding with Keyword</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-09T15:18:55.000Z">2021-02-09</time></p><p class="title"><a href="/recognize-keywords-by-entorpy/">內容推薦 (1) 關鍵詞識別</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-02T15:35:16.000Z">2021-02-02</time></p><p class="title"><a href="/Implement-Thompson-Sampling-in-Recommendation-System/">Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:25:31.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/">Pytorch 實作 CBOW with Hierarchical Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:15:36.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/">Pytorch 實作 Skipgram with Negative Sampling</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">13</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">5</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

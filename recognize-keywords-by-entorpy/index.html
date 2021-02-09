@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>內容推薦 (1) 關鍵詞識別 - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="背景從內容召回說起電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\text{content I2I}$ content I2I 與其他根據用戶行為的召回不同， 最簡單的 content I2I 可以根據 A 商品 title 內容找出其他與 A 相似的 title 的商品，這給了他很強的推薦解釋性 對於商品冷啟動或者系統冷啟動來說，content I2I 可以在沒有用戶交互訊息時，就可"><meta property="og:type" content="article"><meta property="og:title" content="內容推薦 (1) 關鍵詞識別"><meta property="og:url" content="https://seed9d.github.io/recognize-keywords-by-entorpy/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="背景從內容召回說起電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\text{content I2I}$ content I2I 與其他根據用戶行為的召回不同， 最簡單的 content I2I 可以根據 A 商品 title 內容找出其他與 A 相似的 title 的商品，這給了他很強的推薦解釋性 對於商品冷啟動或者系統冷啟動來說，content I2I 可以在沒有用戶交互訊息時，就可"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/hz7T95F.png"><meta property="og:image" content="https://i.imgur.com/WvJYlRV.png"><meta property="og:image" content="https://i.imgur.com/9ZV7aF5.png"><meta property="og:image" content="https://i.imgur.com/q58vjPv.png"><meta property="og:image" content="https://i.imgur.com/dTFYXMh.png"><meta property="og:image" content="https://i.imgur.com/YJQTaFk.png"><meta property="og:image" content="https://i.imgur.com/HsbGKYa.png"><meta property="og:image" content="https://i.imgur.com/QIKT45W.png"><meta property="og:image" content="https://i.imgur.com/vXEteao.png"><meta property="og:image" content="https://i.imgur.com/FaMp6a8.png"><meta property="og:image" content="https://i.imgur.com/gNO1xCI.png"><meta property="og:image" content="https://i.imgur.com/vstiDmj.png"><meta property="article:published_time" content="2021-02-09T15:18:55.000Z"><meta property="article:modified_time" content="2021-02-09T16:38:23.000Z"><meta property="article:author" content="seed9D"><meta property="article:tag" content="recommendation system"><meta property="article:tag" content="NLP"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/hz7T95F.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/recognize-keywords-by-entorpy/"},"headline":"seed9D's blog","image":["https://i.imgur.com/hz7T95F.png","https://i.imgur.com/WvJYlRV.png","https://i.imgur.com/9ZV7aF5.png","https://i.imgur.com/q58vjPv.png","https://i.imgur.com/dTFYXMh.png","https://i.imgur.com/YJQTaFk.png","https://i.imgur.com/HsbGKYa.png","https://i.imgur.com/QIKT45W.png","https://i.imgur.com/vXEteao.png","https://i.imgur.com/FaMp6a8.png","https://i.imgur.com/gNO1xCI.png","https://i.imgur.com/vstiDmj.png"],"datePublished":"2021-02-09T15:18:55.000Z","dateModified":"2021-02-09T16:38:23.000Z","author":{"@type":"Person","name":"seed9D"},"description":"背景從內容召回說起電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\\text{content I2I}$ content I2I 與其他根據用戶行為的召回不同， 最簡單的 content I2I 可以根據 A 商品 title 內容找出其他與 A 相似的 title 的商品，這給了他很強的推薦解釋性 對於商品冷啟動或者系統冷啟動來說，content I2I 可以在沒有用戶交互訊息時，就可"}</script><link rel="canonical" href="https://seed9d.github.io/recognize-keywords-by-entorpy/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>內容推薦 (1) 關鍵詞識別</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-09</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-10</time></span><span class="level-item"><a class="link-muted" href="/categories/recommendation-system/">recommendation system</a></span><span class="level-item">24 minutes read (About 3633 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><h2 id="從內容召回說起"><a href="#從內容召回說起" class="headerlink" title="從內容召回說起"></a>從內容召回說起</h2><p>電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\text{content I2I}$</p>
+<p>content I2I 與其他根據用戶行為的召回不同， 最簡單的 content I2I 可以根據 A 商品 title 內容找出其他與 A 相似的 title 的商品，這給了他很強的推薦解釋性</p>
+<p>對於商品冷啟動或者系統冷啟動來說，content I2I 可以在沒有用戶交互訊息時，就可以進行推薦，也不失為一種冷啟動方案。</p>
+<p>在萬物皆可 Embedding 的今天，content I2I 只要把所有商品的 title 送進 word2Vec  硬 train 一發也就完事了</p>
+<p>當然要是這麼簡單，也就不會有這篇了</p>
+<p><img src="https://i.imgur.com/hz7T95F.png" alt=""></p>
+<a id="more"></a>
+<p><a href="https://seed9d.github.io/categories/recommendation-system/">推薦系統相關文章</a></p>
+<h2 id="一言難盡的商品-title"><a href="#一言難盡的商品-title" class="headerlink" title="一言難盡的商品 title"></a>一言難盡的商品 title</h2><p>我司的電商商品 title 為中翻英淘寶商品 title 而來，基本上毫無文法可言</p>
+<p><img src="https://i.imgur.com/WvJYlRV.png" alt=""></p>
+<p>如果用 word2Vec  硬做一發，再以 doc2vector 的思路融合成 sentence vector ，肯定會加入某些糟糕詞彙的 vector。</p>
+<p>諸如此類的怪異詞彙：</p>
+<ul>
+<li>EX: “real time” (應該是實時發貨？) , liu haichang(劉海夾??), two yuan(兩元？), yiwu(義烏？)</li>
+</ul>
+<p>為了讓 vector 能更好的表達句子 title，加上組內對於商品關鍵字有需求，於是就有了以下商品 title  挖掘出中 產品詞 與 標籤詞的識別任務 </p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><h2 id="關鍵詞識別"><a href="#關鍵詞識別" class="headerlink" title="關鍵詞識別"></a>關鍵詞識別</h2><p>先解釋一下，什麼是產品詞，什麼是標籤詞</p>
+<p>以下是我自己的定義：</p>
+<p><img src="https://i.imgur.com/9ZV7aF5.png" alt="商品 title"></p>
+<p>所有商品都會有自己的 tilte，但肯定會有一個 “產品詞” 去描述這商品到底是賣什麼，他可以是單詞，稱為 unigram，也可以複合詞，bigram or trigram……</p>
+<ul>
+<li>unigram:shirt , blouse</li>
+<li>bigram: apron dress, bermuda shorts</li>
+<li>trigram: buckle strap shoes, denim mini dress</li>
+</ul>
+<p>“ 標籤詞 “ (label words)，定義比較空泛， 狹義一點指那些可以用來形容商品或能凸顯商品特色的詞</p>
+<ul>
+<li>unigram: denim, hipster</li>
+<li>bigram: chinese tunic, cotton padded</li>
+<li>trigram: deep v collar</li>
+</ul>
+<p>廣義一點，也可以包含產品詞，最終還得看業務需求，標籤詞他還能在細分出 ＂屬性詞＂(propery)</p>
+<ul>
+<li>領口：高領， 低領，V 領，深 V ..</li>
+<li>材質：棉，麻 …</li>
+</ul>
+<p>不管怎樣，如果沒有人工去蒐集出詞彙，那就得靠機器自己挖掘詞彙字典。</p>
+<p>問題來了，在我們的商品池中的商品 title，基本上沒什文法可言，詞彙也是中翻英出來的。</p>
+<p>如何找出有意義的詞彙組成的 ＂產品詞＂或＂標籤詞＂就是問題的核心了</p>
+<p>EX:<br>＂long＂,＂sleeved＂ 分別看沒什意義，但合起來變成 bigram words： ＂long sleeved” 就有意義</p>
+<p>那要怎麼衡量 words 跟 words 之間的組合程度呢？</p>
+<p>就是 <strong>熵 entropy了</strong></p>
+<h2 id="Entropy-識別關鍵字"><a href="#Entropy-識別關鍵字" class="headerlink" title="Entropy 識別關鍵字"></a>Entropy 識別關鍵字</h2><h3 id="Entropy"><a href="#Entropy" class="headerlink" title="Entropy"></a>Entropy</h3><p>在 information theory 中 ，entropy 被用來衡量系統內的不確定性程度</p>
+<script type="math/tex; mode=display">H(X) = -\sum_x p(x)\log p(x)</script><p>＂不確定性＂(uncertainty) 跟 information 豐富程度是一體兩面的</p>
+<p>entropy 越高，代表不確定性越高，代表能提供的 information 也更多</p>
+<p>舉例來說，如果明天會下雨的 probability 為 0.5，天氣系統的 entropy (以 2 為底)就是</p>
+<script type="math/tex; mode=display">-\cfrac{1}{2} \log_2\cfrac{1}{2} - -\cfrac{1}{2} \log_2\cfrac{1}{2} = 1</script><p>如果明天會下雨的 probability 為 1，那天氣系統的 entropy 就是</p>
+<script type="math/tex; mode=display">-1log_21 = 0</script><p>代表天氣系統完全沒有不確定性，明天肯定會下雨，對我們無法提供任何 information</p>
+<p>我們可以利用 entropy 來衡量 </p>
+<ul>
+<li>內聚力：word  跟 word 之間的連結緊密程度</li>
+<li>豐富度：words 本身的自由運用程度</li>
+</ul>
+<h3 id="互消息-MI-Mutual-Information"><a href="#互消息-MI-Mutual-Information" class="headerlink" title="互消息 (MI - Mutual Information)"></a>互消息 (MI - Mutual Information)</h3><p>先上公式</p>
+<script type="math/tex; mode=display">I(X,Y) =\sum_{y \in Y}\sum_{x \in X} p(x,y) \log(\cfrac{p(x,y)}{p(x) p(y)})</script><p>再上圖</p>
+<p><img src="https://i.imgur.com/q58vjPv.png" alt=""></p>
+<p>看圖就可以直觀明白，$I(X,Y)$ 可以用來衡量兩個事件彼此的關聯性，直觀上互消息可以用來衡量兩個 word 之間的依賴程度。</p>
+<p>$\text{PMI}$ (point-wise mutual information) 也可以用來來衡量兩個 word  的相關性，他被視為簡化版的 $\text{MI}$</p>
+<script type="math/tex; mode=display">PMI(x,y) = \log \cfrac{p(x,y)}{p(x)p(y)}</script><p>word A  跟 word B 的 PMI(A， B) 或 MI(A，B）value  越高，代表 A, B  越相互依賴，組成一個 term 的可能性越越大</p>
+<p>但從公式上不難看出，MI 是 weighted  過後的 PMI。在實務上，PMI 傾向給 “those word only occur together” 組成的 bigram 較高的分數 ; 而 MI 傾向給 high frequency bigram 更高的分數</p>
+<p>EX:<br>在商品 title 中有個詞 ＂small fresh＂</p>
+<ul>
+<li>joint probability $\text{p(“small”, “fresh”)} = 0.002$</li>
+<li>$\text{p(“small”)} = 0.0058$ $\text{p(“fresh”)}= 0.0035$</li>
+<li>$\text{PMI(“small”, “fresh”)} = 4.59$</li>
+<li>$\text{MI(“small”, “fresh”)} =0.009$</li>
+</ul>
+<p>有另一個詞 ＂fresh loos＂</p>
+<ul>
+<li>join probability $\text{p(“fresh loose”)} = 0.0001$</li>
+<li>$\text{p(“fresh”) =0.0035}$  $\text{p(“loose”)} = 0.0024$</li>
+<li>$\text{PMI(“fresh”, “loose”)} = 2.47$</li>
+<li>$\text{MI(“fresh”, “loose”)} =0.00024$</li>
+</ul>
+<p>顯然，對於 fresh 這個 word 而言，＂small fresh＂比 ＂fresh loose＂成詞程度較高。</p>
+<h3 id="左右熵"><a href="#左右熵" class="headerlink" title="左右熵"></a>左右熵</h3><p>左右熵代表了 word 本身可以自由運用的程度</p>
+<p>我們知道，一個 word A 可以跟左邊的 word L，也可以跟右邊的 word R 組合，而左右熵就是來衡量 word A 組成 phase 的豐富程度</p>
+<script type="math/tex; mode=display">H_L(W) = -\sum_{l \in L}p(\text{l::w | w}) \ \log_2 p(\text{l::w| w}) \\
+H_R(W) = -\sum_{r \in R}p(\text{r::w | w}) \ \log_2 p(\text{r::w| w})</script><p>EX：</p>
+<p>假設 ＂skirt ＂ 這個產品詞在池子中的鄰字組合計數如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cal_information</span>(<span class="params">x</span>):</span></span><br><span class="line">    <span class="keyword">return</span> - x * math.log(x)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cal_entropy</span>(<span class="params">freqDict</span>):</span></span><br><span class="line">    total_count = <span class="built_in">sum</span>(<span class="built_in">list</span>(freqDict.values()))</span><br><span class="line">    informations = [cal_information(fre / total_count) <span class="keyword">for</span> fre <span class="keyword">in</span> freqDict.values()]</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sum</span>(informations)</span><br><span class="line"></span><br><span class="line">skirt_left = &#123;</span><br><span class="line">    <span class="string">&quot;long skirt&quot;</span>: <span class="number">500</span>,</span><br><span class="line">    <span class="string">&quot;midi skirt&quot;</span>: <span class="number">1000</span>,</span><br><span class="line">    <span class="string">&quot;pegged skirt&quot;</span>: <span class="number">100</span>,</span><br><span class="line">    <span class="string">&quot;pleated skirt&quot;</span>: <span class="number">300</span>,</span><br><span class="line">    <span class="string">&quot;prairie skirt&quot;</span>: <span class="number">20</span></span><br><span class="line">    <span class="string">&quot;printed skirt&quot;</span>: <span class="number">400</span>,</span><br><span class="line">    <span class="string">&quot;sarong skirt&quot;</span>: <span class="number">80</span>,</span><br><span class="line">    <span class="string">&quot;trumpet skirt&quot;</span>: <span class="number">600</span>       </span><br><span class="line">&#125;</span><br><span class="line">skirt_right = &#123;</span><br><span class="line">    <span class="string">&quot;skirt suit&quot;</span>: <span class="number">500</span>,</span><br><span class="line">    <span class="string">&quot;skirt dress&quot;</span>: <span class="number">1000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>則 skirt 的 left entropy 為</p>
+<script type="math/tex; mode=display">E_L(\text{"skirt"}) = 1.82</script><p>right entropy為</p>
+<script type="math/tex; mode=display">E_R(\text{"skirt"}) =0.63</script><p>顯然對 “skirt” 而言，左側語境比右側豐富</p>
+<h3 id="Normalize-Entropy-amp-PMI-amp-MI"><a href="#Normalize-Entropy-amp-PMI-amp-MI" class="headerlink" title="Normalize Entropy &amp; PMI &amp; MI"></a>Normalize Entropy &amp; PMI &amp; MI</h3><p>PMI, MI 與  entropy 的值域是個相對 unbound 的值，造成在使用時比較難拿捏 threshold，得來回比對數值決定成詞標準，解決方法是 normalize 值到固定範圍內:</p>
+<ul>
+<li>Normalizing PMI  into (1, -1)</li>
+</ul>
+<script type="math/tex; mode=display">\text{PMI}_n(x, y) = (\ln\cfrac{p(x,y)}{p(x)p(y)}) / -\ln p(x,y)</script><ul>
+<li>Normalizing MI into (0, 1)</li>
+</ul>
+<script type="math/tex; mode=display">\text{MI}*n(X,Y) = \cfrac{\sum*{x,y} p(x,y) \ln \frac{p(x,y)}{p(x) p(y)}}{-\sum_{x,y}p(x,y)\ln p(x,y)}</script><ul>
+<li>Normalizing entropy into (0, 1)</li>
+</ul>
+<script type="math/tex; mode=display">H_n(X) = -\sum_x \frac{p(x) \log p(x)}{\log n}</script><p>論文研究顯示 Normalized MI &amp; PMI  為對角線趨勢，但依然會有一定失真，所以在使用上得自行拿捏<img src="https://i.imgur.com/dTFYXMh.png" alt="Normalized (Pointwise) Mutual Information in Collocation Extraction" style="zoom:50%;" /></p>
+<p>一般來說</p>
+<ul>
+<li>MI 偏向 high frequency，NMI 會稍微將高頻詞 push down ，低頻詞 pull up</li>
+<li>PMI 偏向 low frequency，NPMI 稍微降低低頻詞的 rank</li>
+</ul>
+<h2 id="Score-成詞分數"><a href="#Score-成詞分數" class="headerlink" title="Score 成詞分數"></a>Score 成詞分數</h2><p>有了度量語境豐富度跟詞彙內聚力的工具後，得進一步定出一個 score 代表＂成詞程度＂，score  越高，代表這個詞成為有意義詞的可能性相對較高。</p>
+<p>先定義一個 candidate phrase 的抽象表達，方便我們計算其成詞 score。</p>
+<p>我們的 Candidate phrase  可以是以下這些組合：</p>
+<ul>
+<li>unigram candidate (special case)<ul>
+<li>[unigram] ,    ex: [skirt]</li>
+</ul>
+</li>
+<li>bigram candidate<ul>
+<li>[unigram] :: [unigram], ex: [long :: skirt]</li>
+</ul>
+</li>
+<li>trigram candidate<ul>
+<li>[unigram] :: [bigram], ex: [casual] :: [long skirt]</li>
+<li>[bigram] :: [unigram] ex: [flower printed]  :: [shirt]</li>
+</ul>
+</li>
+</ul>
+<p>拆分成  [Left] :: [Right] 的形式方便我們泛化處理 candidate phrase</p>
+<p>接下來利用定義好的 candidate phrase 來計算成詞 score</p>
+<p><img src="https://i.imgur.com/YJQTaFk.png" alt="product_label_word"></p>
+<p>這裡給出一個最簡單的 score 計算：</p>
+<script type="math/tex; mode=display">\text{score} = \text{(PMI or MI)} - \min(Right_{\text{left_entropy}}, Left_{\text{right_entropy}}) + \min(\text{right_entropy}, \text{left_entropy})</script><ul>
+<li>$\min(Right_{\text{left_entropy}}, Left_{\text{right_entropy}})$  分別表示，Left side 與 Right  side 各自的語境豐富程度，通常取  min 後的的值越大，代表 Left side 或 Right side 有一側傾向與其他詞結合，candidate 越不可能成詞</li>
+<li>$\min(\text{right_entropy}, \text{left_entropy})$ 表示 candidate 左右兩側語境豐富成度，越大代表 candidate 越可能成詞</li>
+</ul>
+<h2 id="Label-Score-amp-Product-Score"><a href="#Label-Score-amp-Product-Score" class="headerlink" title="Label Score &amp;  Product Score"></a>Label Score &amp;  Product Score</h2><p>有了以上的 background 是時候來說說產品詞跟標籤詞的特性了，大致上</p>
+<ul>
+<li>產品詞在 candidate 會出現在 right side，其左側自由度較高:  left_entropy &gt;  right_entropy</li>
+</ul>
+<p><img src="https://i.imgur.com/HsbGKYa.png" alt="lace blouse" style="zoom: 50%;" /></p>
+<ul>
+<li>標籤詞在 candidate 會出現在 left side，其右側自由度較高: right_entropy &gt; left_entropy</li>
+</ul>
+<p><img src="https://i.imgur.com/QIKT45W.png" alt="short sleeve" style="zoom: 67%;" /></p>
+<p>顯然只有成詞分數 score 不足以將產品詞和標籤詞分離，所以每個 candidate phrase，會針對 label 跟 product 特性計算 label score 跟 product score。</p>
+<p>先上圖：<img src="https://i.imgur.com/vXEteao.png" alt="product_label_recong"></p>
+<ul>
+<li>Right Phrase，表  corpus 內出現在 candidate  right side 的 phrase 集合<ul>
+<li>EX : short sleeve  right side unigram 集合</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://i.imgur.com/FaMp6a8.png" style="zoom: 67%;" /></p>
+<ul>
+<li>Light Phrase，表  corpus 內出現在 candidate  left side 的 phrase 集合</li>
+</ul>
+<p>計算 Right Phrases 集合內每一個 phase 對 candidate phrase 的 sum of  information，代表從所有 right phrases 的角度來看 candidate phrase 的豐富度，值越高代表  candidate 的 right phrases 組成越豐富，其成為 label 的機會越高。</p>
+<p><img src="https://i.imgur.com/gNO1xCI.png" alt="cal_information"></p>
+<p>我們希望單個 $\text{phrase}_i$ 對 candidate phrase $C$ 的 conditional probability $p(\text{phrase}_i::C|\text{phrase}_i)$ 不要太高也不要太低，此時算出的  $\text{information} = - p(\text{phrase}_i::C|\text{phrase}_i) \log p(\text{phrase}_i::C|\text{phrase}_i)$ 恰好是最大</p>
+<script type="math/tex; mode=display">\begin{aligned} I_{L,C} &= \sum_{phase_i \in C_{L}}  - p(\text{phrase}_i::C|\text{phrase}_i) \log p(\text{phrase}\_i::C|\text{phrase}_i)\\ I_{R,C} &= \sum_{phrase_j \in C*{R}}  - p(C::\text{phrase}_j|\text{phrase}_j) \log p(C::\text{phrase}_j|\text{phrase}_j) \end{aligned}</script><ul>
+<li>$I_{L,C}$ 表 left phrases 對 candidate 的 sum of information</li>
+<li>$C_L$ 表 candidate  的 left phrase 集合</li>
+</ul>
+<p>有了 left / right phrases information，一個簡單的  label score and product score 計算如下</p>
+<script type="math/tex; mode=display">\begin{aligned} \text{label score} &= (\text{right_entropy - left_entropy}) + (I_{R,C} - I_{L,C})  \\ \text{product score} & = (\text{left_entropy - right_entropy}) + (I_{L,C} - I_{R,C})\end{aligned}</script><p>P.S. 上面分數計算只是提供一個計算思路，實際使用還是得資料分析</p>
+<h1 id="Engineering"><a href="#Engineering" class="headerlink" title="Engineering"></a>Engineering</h1><h2 id="Data-Structure"><a href="#Data-Structure" class="headerlink" title="Data Structure"></a>Data Structure</h2><p>candidate phrase  的需要計算的值有</p>
+<ul>
+<li>candidate 的 left entropy and right entropy</li>
+<li>candidate 的 PMI/MI 中的  joint probability / frequency</li>
+<li>left component 的 entropy ; right component 的 entropy</li>
+<li>right phrase information and left phrase information</li>
+<li>… etc</li>
+</ul>
+<p>為了方便計算 candidate 需要兩種 Tries ，一個存 corpus 內所有 sentence 的 prefix tries，另一個存 corpus 內所有 reversed title 的  reversed tries (叫 suffix  tries 怕有歧義)</p>
+<p>以 <code>title = &quot;Masks Scarf Cashmere Sweater Cap&quot;</code> 為例</p>
+<p>首先將 title 所有可能 ngram 取出:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Masks&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Scarf&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Cashmere&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Sweater&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;Cap&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p>build prefix tries:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[[<span class="string">&#x27;Masks&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Masks&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cap&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cap&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+<p>build reversed tries:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[[<span class="string">&#x27;Cap&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cap&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cap&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cap&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cap&#x27;</span>, <span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Masks&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Sweater&#x27;</span>, <span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Masks&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Cashmere&#x27;</span>, <span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Masks&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Scarf&#x27;</span>, <span class="string">&#x27;Masks&#x27;</span>],</span><br><span class="line"> [<span class="string">&#x27;Masks&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+<p>當我們的 <code>candidate phrase = [&quot;Cashmere&quot; :: &quot;Sweater&quot;]</code> 時，</p>
+<p>透過 prefix tries 即可找出 <code>[&quot;Cashmere&quot; :: &quot;Sweater&quot;]</code> 右側所有的 phrase node</p>
+<p>透過 reversed tries 即可找出 <code>[&quot;Cashmere&quot; :: &quot;Sweater&quot;]</code> 左側所有的 phrase node</p>
+<h2 id="啟發式辨識流程"><a href="#啟發式辨識流程" class="headerlink" title="啟發式辨識流程"></a>啟發式辨識流程</h2><p><img src="https://i.imgur.com/vstiDmj.png" alt=""></p>
+<p>用 entropy 辨識產品詞與標籤詞本質上是 unsupervised learning 的做法，如果以 threshold 卡 score, label score, product score 判斷結果，肯定事倍工半。辨識過程中加入 clustering/grouping 輔助判斷，多迭代幾遍後就能搜集到高度置信的結果。</p>
+<h3 id="Grouping"><a href="#Grouping" class="headerlink" title="Grouping"></a>Grouping</h3><p>把 candidate phrase 當成 data sample $x$ 的話，其包含的特徵有</p>
+<ul>
+<li>自身統計類：frequency ，probability … etc</li>
+<li>自身 entropy related PMI/MI，NPMI/NMI，left entropy / right entropy</li>
+<li>left / right component related: PMI/MI ，entropy to left/entropy to right</li>
+<li>left phrase/right phrase related: sum of information ，deviation，diversity，total frequency，average frequency，total phrase …etc</li>
+<li>score  類：成詞 score ，label score，product score</li>
+</ul>
+<p>挑出 data samples 裡有鑑別度的特徵丟進  cluster 算法中初步分成四群：</p>
+<ul>
+<li>group A: 獨立成詞<ul>
+<li>一些用法固定的詞彙</li>
+<li>ex : “big code”(這應該是想表示大碼？)，”united state”</li>
+</ul>
+</li>
+<li>group B: label 詞<ul>
+<li>符合 label 詞的特性，右側自由度高</li>
+<li>ex: “short sleeved”</li>
+</ul>
+</li>
+<li>group C: 右側 product 詞<ul>
+<li>符合 product 詞的特性，左側自由度高</li>
+<li>ex: “lace blouse”</li>
+</ul>
+</li>
+<li>group D: 無用詞<ul>
+<li>沒什意義的詞，本身成詞 score 不高</li>
+<li>ex: “lace long”</li>
+</ul>
+</li>
+</ul>
+<p>然後在每個  group  中，分別挑出多個  high confidence and typical data samples ，跟其餘的 data sample 做 KNN/Kmean，來回個幾次做 semi-supervised  。</p>
+<h3 id="Exploration"><a href="#Exploration" class="headerlink" title="Exploration"></a>Exploration</h3><p>隨著置信的 data sample 越多，可以考慮訓練 decision tree，辨識新的 candidate phrases。</p>
+<p>也可以利用  word2Vec 強大的相近詞搜索相似的 產品詞/標籤詞 挖掘辨識新的產品詞/標籤詞</p>
+<p>這兩個做法建立在手頭上的詞彙已能很好區分出產品詞和標籤詞的情況下，例如用 word2Vec 找相近產品詞有奇效：</p>
+<p>In:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">w2v_model.wv.most_similar(<span class="string">&quot;flight_jacket&quot;</span>, topn=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p>out:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[(<span class="string">&#x27;bomber_jacket&#x27;</span>, <span class="number">0.8251528739929199</span>),</span><br><span class="line"> (<span class="string">&#x27;flight_suit&#x27;</span>, <span class="number">0.8104218244552612</span>),</span><br><span class="line"> (<span class="string">&#x27;coach_jacket&#x27;</span>, <span class="number">0.7058290243148804</span>),</span><br><span class="line"> (<span class="string">&#x27;workwear_jacket&#x27;</span>, <span class="number">0.7037896513938904</span>),</span><br><span class="line"> (<span class="string">&#x27;jacket&#x27;</span>, <span class="number">0.7035773992538452</span>),</span><br><span class="line"> (<span class="string">&#x27;ma_1&#x27;</span>, <span class="number">0.6985215544700623</span>),</span><br><span class="line"> (<span class="string">&#x27;baseball_uniform&#x27;</span>, <span class="number">0.6333736181259155</span>),</span><br><span class="line"> (<span class="string">&#x27;ma1_pilot&#x27;</span>, <span class="number">0.6201080679893494</span>),</span><br><span class="line"> (<span class="string">&#x27;jackets&#x27;</span>, <span class="number">0.608674168586731</span>),</span><br><span class="line"> (<span class="string">&#x27;denim_jacket&#x27;</span>, <span class="number">0.6048851013183594</span>)]</span><br></pre></td></tr></table></figure>
+<h2 id="Some-Tips"><a href="#Some-Tips" class="headerlink" title="Some Tips"></a>Some Tips</h2><ol>
+<li>candidate phrase proposal：可以透過 TF-IDF, frequency, student-t, PMI 先行召回一批 candidate 再開始辨識</li>
+<li>一次處理一種 ngram</li>
+<li>辨識過程中加入字典輔助<ul>
+<li>product words 黑白字典</li>
+<li>label words 黑白字典</li>
+</ul>
+</li>
+<li>善用 bigram / trigram 可以由其他 phrase 組合出，可以省去很多計算量<ul>
+<li>產品詞組成<ul>
+<li>unigram 產品詞<ul>
+<li>[unigram], ex： skirt</li>
+</ul>
+</li>
+<li>bigram 產品詞<ul>
+<li>[unigram label] :: [unigram product] , ex: long skirt</li>
+<li>[unigram] :: [unigram],  ex: phone shell (手機殼 …)</li>
+</ul>
+</li>
+<li>trigram 產品詞<ul>
+<li>[bigram label] :: [unigram product], ex: long sleeved blouse</li>
+<li>[unigram label] :: [bigram product], ex: little black dress</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>標籤詞組成<ul>
+<li>unigram 標籤詞<ul>
+<li>[unigram],  ex:  slim</li>
+</ul>
+</li>
+<li>bigram 標籤詞<ul>
+<li>[unigram] :: [unigram], ex: v neck, high cut</li>
+</ul>
+</li>
+<li>trigram 標籤詞<ul>
+<li>[unigram label] :: [bigram label], ex: half high collar</li>
+<li>[bigram label] :: [unigram], ex: deep v collar</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>data mining basing on entropy<ul>
+<li>Language Models – handling unseen sequences &amp; Information Theory<br><a target="_blank" rel="noopener" href="https://www3.cs.stonybrook.edu/~ychoi/cse628/lecture/03-ngram.pdf">https://www3.cs.stonybrook.edu/~ychoi/cse628/lecture/03-ngram.pdf</a></li>
+<li>反作弊基于左右信息熵和互信息的新词挖掘 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/25499358">https://zhuanlan.zhihu.com/p/25499358</a></li>
+<li>基于互信息和左右信息熵的短语提取识别 <a target="_blank" rel="noopener" href="http://www.hankcs.com/nlp/extraction-and-identification-of-mutual-information-about-the-phrase-based-on-information-entropy.html">http://www.hankcs.com/nlp/extraction-and-identification-of-mutual-information-about-the-phrase-based-on-information-entropy.html</a></li>
+</ul>
+</li>
+<li>Normalization entropy<ul>
+<li>Efficiency (normalized entropy) <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Entropy_(information_theory">https://en.wikipedia.org/wiki/Entropy_(information_theory)#Efficiency_(normalized_entropy)</a>#Efficiency_(normalized_entropy))</li>
+<li>Bouma, G. (2009). Normalized ( Pointwise ) Mutual Information in Collocation Extraction. Proceedings of German Society for Computational Linguistics (GSCL 2009), 31–40.</li>
+<li>[<a target="_blank" rel="noopener" href="https://math.stackexchange.com/questions/395121/how-entropy-scales-with-sample-size">https://math.stackexchange.com/questions/395121/how-entropy-scales-with-sample-size</a></li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>內容推薦 (1) 關鍵詞識別</p><p><a href="https://seed9d.github.io/recognize-keywords-by-entorpy/">https://seed9d.github.io/recognize-keywords-by-entorpy/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-09</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-10</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/recommendation-system/">recommendation system, </a><a class="link-muted" rel="tag" href="/tags/NLP/">NLP </a></div></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/title-embedding-with-keywords/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">內容推薦 (2) Title Embedding with Keyword</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/Implement-Thompson-Sampling-in-Recommendation-System/"><span class="level-item">Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "813dfe29161b965491b477f47d419a7c",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#背景"><span class="level-left"><span class="level-item">背景</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從內容召回說起"><span class="level-left"><span class="level-item">從內容召回說起</span></span></a></li><li><a class="level is-mobile" href="#一言難盡的商品-title"><span class="level-left"><span class="level-item">一言難盡的商品 title</span></span></a></li></ul></li><li><a class="level is-mobile" href="#原理"><span class="level-left"><span class="level-item">原理</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#關鍵詞識別"><span class="level-left"><span class="level-item">關鍵詞識別</span></span></a></li><li><a class="level is-mobile" href="#Entropy-識別關鍵字"><span class="level-left"><span class="level-item">Entropy 識別關鍵字</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Entropy"><span class="level-left"><span class="level-item">Entropy</span></span></a></li><li><a class="level is-mobile" href="#互消息-MI-Mutual-Information"><span class="level-left"><span class="level-item">互消息 (MI - Mutual Information)</span></span></a></li><li><a class="level is-mobile" href="#左右熵"><span class="level-left"><span class="level-item">左右熵</span></span></a></li><li><a class="level is-mobile" href="#Normalize-Entropy-amp-PMI-amp-MI"><span class="level-left"><span class="level-item">Normalize Entropy &amp; PMI &amp; MI</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Score-成詞分數"><span class="level-left"><span class="level-item">Score 成詞分數</span></span></a></li><li><a class="level is-mobile" href="#Label-Score-amp-Product-Score"><span class="level-left"><span class="level-item">Label Score &amp;  Product Score</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Engineering"><span class="level-left"><span class="level-item">Engineering</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Data-Structure"><span class="level-left"><span class="level-item">Data Structure</span></span></a></li><li><a class="level is-mobile" href="#啟發式辨識流程"><span class="level-left"><span class="level-item">啟發式辨識流程</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Grouping"><span class="level-left"><span class="level-item">Grouping</span></span></a></li><li><a class="level is-mobile" href="#Exploration"><span class="level-left"><span class="level-item">Exploration</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Some-Tips"><span class="level-left"><span class="level-item">Some Tips</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-09T15:49:29.000Z">2021-02-09</time></p><p class="title"><a href="/title-embedding-with-keywords/">內容推薦 (2) Title Embedding with Keyword</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-09T15:18:55.000Z">2021-02-09</time></p><p class="title"><a href="/recognize-keywords-by-entorpy/">內容推薦 (1) 關鍵詞識別</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-02T15:35:16.000Z">2021-02-02</time></p><p class="title"><a href="/Implement-Thompson-Sampling-in-Recommendation-System/">Thompson Sampling 推薦系統中簡單實用的 Exploring Strategy</a></p><p class="categories"><a href="/categories/recommendation-system/">recommendation system</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:25:31.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/">Pytorch 實作 CBOW with Hierarchical Softmax</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-01-31T15:15:36.000Z">2021-01-31</time></p><p class="title"><a href="/Pytorch-Implement-Skipgram-with-Negative-Sampling/">Pytorch 實作 Skipgram with Negative Sampling</a></p><p class="categories"><a href="/categories/NLP/">NLP</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">13</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">5</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

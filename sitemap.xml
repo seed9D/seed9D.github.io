@@ -2,14 +2,35 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://seed9d.github.io/404.html</loc>
+    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
+    
+    <lastmod>2021-02-09</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
+    
+    <lastmod>2021-02-09</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>
+    
+    <lastmod>2021-02-09</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</loc>
     
     <lastmod>2021-02-02</lastmod>
     
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/Implement-Thompson-Sampling-in-Recommendation-System/</loc>
+    <loc>https://seed9d.github.io/404.html</loc>
     
     <lastmod>2021-02-02</lastmod>
     
@@ -72,13 +93,6 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>
-    
-    <lastmod>2021-01-24</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://seed9d.github.io/google39024f504cd1475b.html</loc>
     
     <lastmod>2021-01-23</lastmod>
@@ -100,7 +114,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/ckko845tp000fhue2agdjd7gp/</loc>
+    <loc>https://seed9d.github.io/ckky7073i000fsxe298cp6ib4/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -116,7 +130,7 @@
 
   <url>
     <loc>https://seed9d.github.io/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -124,35 +138,35 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/ML/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/recommendation-system/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/NLP/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/word-embedding/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/pytorch/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -161,21 +175,21 @@
   
   <url>
     <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/recommendation-system/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/NLP/</loc>
-    <lastmod>2021-02-02</lastmod>
+    <lastmod>2021-02-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
