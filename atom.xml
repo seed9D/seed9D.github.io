@@ -44,7 +44,7 @@
     <link href="https://seed9d.github.io/recognize-keywords-by-entorpy/"/>
     <id>https://seed9d.github.io/recognize-keywords-by-entorpy/</id>
     <published>2021-02-09T15:18:55.000Z</published>
-    <updated>2021-02-09T16:38:23.000Z</updated>
+    <updated>2021-02-10T04:30:16.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h1&gt;&lt;h2 id=&quot;從內容召回說起&quot;&gt;&lt;a href=&quot;#從內容召回說起&quot; class=&quot;headerlink&quot; title=&quot;從內容召回說起&quot;&gt;&lt;/a&gt;從內容召回說起&lt;/h2&gt;&lt;p&gt;電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\text{content I2I}$&lt;/p&gt;
@@ -92,11 +92,11 @@
   </entry>
   
   <entry>
-    <title>Pytorch 實作 CBOW with Hierarchical Softmax</title>
+    <title>Word2Vec (5):Pytorch 實作 CBOW with Hierarchical Softmax</title>
     <link href="https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/"/>
     <id>https://seed9d.github.io/Pytorch-Implement-CBOW-with-Hierarchical-Softmax/</id>
     <published>2021-01-31T15:25:31.000Z</published>
-    <updated>2021-02-02T15:24:08.000Z</updated>
+    <updated>2021-02-10T04:43:51.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;CBOW-with-Hierarchical-Softmax&quot;&gt;&lt;a href=&quot;#CBOW-with-Hierarchical-Softmax&quot; class=&quot;headerlink&quot; title=&quot;CBOW with Hierarchical Softmax&quot;&gt;&lt;/a&gt;CBOW with Hierarchical Softmax&lt;/h1&gt;&lt;p&gt;CBOW  的思想是用兩側 context words 去預測中間的 center word&lt;/p&gt;
@@ -116,11 +116,11 @@
   </entry>
   
   <entry>
-    <title>Pytorch 實作 Skipgram with Negative Sampling</title>
+    <title>Word2Vec (6):Pytorch 實作 Skipgram with Negative Sampling</title>
     <link href="https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/"/>
     <id>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</id>
     <published>2021-01-31T15:15:36.000Z</published>
-    <updated>2021-01-31T16:43:41.000Z</updated>
+    <updated>2021-02-10T04:43:40.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;Skipgram-with-Negative-Sampling&quot;&gt;&lt;a href=&quot;#Skipgram-with-Negative-Sampling&quot; class=&quot;headerlink&quot; title=&quot;Skipgram with Negative Sampling&quot;&gt;&lt;/a&gt;Skipgram with Negative Sampling&lt;/h1&gt;&lt;p&gt;skipgram  的思想是用中心詞 center word 去預測兩側的 context words &lt;/p&gt;
@@ -140,11 +140,11 @@
   </entry>
   
   <entry>
-    <title>Pytorch 實作 Word2Vec with Softmax</title>
+    <title>Word2Vec (4):Pytorch 實作 Word2Vec with Softmax</title>
     <link href="https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/"/>
     <id>https://seed9d.github.io/Pytorch-Implement-Naive-Word2Vec-with-Softmax/</id>
     <published>2021-01-31T15:03:30.000Z</published>
-    <updated>2021-01-31T15:40:20.000Z</updated>
+    <updated>2021-02-10T04:43:46.000Z</updated>
     
     
     <summary type="html">&lt;p&gt;用  pytorch  實現最簡單版本的  CBOW 與 skipgram，objective function 採用 minimize negative log likelihood with softmax&lt;/p&gt;</summary>
@@ -163,11 +163,11 @@
   </entry>
   
   <entry>
-    <title>Negative Sampling 背後的數學</title>
+    <title>Word2Vec (3):Negative Sampling 背後的數學</title>
     <link href="https://seed9d.github.io/negative-sampling-in-word2vec/"/>
     <id>https://seed9d.github.io/negative-sampling-in-word2vec/</id>
     <published>2021-01-24T15:05:45.000Z</published>
-    <updated>2021-01-31T15:35:22.000Z</updated>
+    <updated>2021-02-10T04:43:56.000Z</updated>
     
     
     <summary type="html">&lt;p&gt;以下用 Skip-gram 為例&lt;/p&gt;
@@ -185,11 +185,11 @@
   </entry>
   
   <entry>
-    <title>Hierarchical Softmax 背後的數學</title>
+    <title>Word2Vec (2):Hierarchical Softmax 背後的數學</title>
     <link href="https://seed9d.github.io/hierarchical-softmax-in-word2vec/"/>
     <id>https://seed9d.github.io/hierarchical-softmax-in-word2vec/</id>
     <published>2021-01-24T11:51:54.000Z</published>
-    <updated>2021-01-31T15:36:18.000Z</updated>
+    <updated>2021-02-10T04:44:07.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;以-CBOW-為例&quot;&gt;&lt;a href=&quot;#以-CBOW-為例&quot; class=&quot;headerlink&quot; title=&quot;以 CBOW 為例&quot;&gt;&lt;/a&gt;以 CBOW 為例&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/Pbdqtx9.png&quot; style=&quot;zoom:50%;&quot; /&gt;&lt;/p&gt;</summary>
@@ -206,11 +206,11 @@
   </entry>
   
   <entry>
-    <title>NLP Language Model</title>
+    <title>Word2Vec (1):NLP Language Model</title>
     <link href="https://seed9d.github.io/NLP-language-model/"/>
     <id>https://seed9d.github.io/NLP-language-model/</id>
     <published>2021-01-24T11:33:05.000Z</published>
-    <updated>2021-01-25T03:24:03.000Z</updated>
+    <updated>2021-02-10T04:44:01.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;General-Form&quot;&gt;&lt;a href=&quot;#General-Form&quot; class=&quot;headerlink&quot; title=&quot;General Form&quot;&gt;&lt;/a&gt;General Form&lt;/h1&gt;&lt;script type=&quot;math/tex; mode=display&quot;&gt;
@@ -226,17 +226,17 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   </entry>
   
   <entry>
-    <title>word2Vec 從原理到實現</title>
+    <title>Word2Vec (0):從原理到實現</title>
     <link href="https://seed9d.github.io/word2vec-from-theory-2-implement/"/>
     <id>https://seed9d.github.io/word2vec-from-theory-2-implement/</id>
     <published>2021-01-24T11:11:42.000Z</published>
-    <updated>2021-01-31T15:37:30.000Z</updated>
+    <updated>2021-02-10T04:43:29.000Z</updated>
     
     
     <summary type="html">&lt;p&gt;這篇是在 notion 整理的筆記大綱，只提供綱要性的說明&lt;/p&gt;
 &lt;h1 id=&quot;預備知識&quot;&gt;&lt;a href=&quot;#預備知識&quot; class=&quot;headerlink&quot; title=&quot;預備知識&quot;&gt;&lt;/a&gt;預備知識&lt;/h1&gt;&lt;ul&gt;
 &lt;li&gt;&lt;p&gt;language model： NLP 語言模型&lt;/p&gt;
-&lt;p&gt;參閱 &lt;a href=&quot;/NLP-language-model/&quot; title=&quot;NLP Language Model&quot;&gt;NLP Language Model&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;參閱 &lt;a href=&quot;/NLP-language-model/&quot; title=&quot;Word2Vec (1):NLP Language Model&quot;&gt;Word2Vec (1):NLP Language Model&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;huffman tree&lt;/p&gt;
 &lt;/li&gt;
@@ -322,8 +322,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckky7073i000fsxe298cp6ib4/"/>
-    <id>https://seed9d.github.io/ckky7073i000fsxe298cp6ib4/</id>
+    <link href="https://seed9d.github.io/ckkyy83g1000foje2454l7b5j/"/>
+    <id>https://seed9d.github.io/ckkyy83g1000foje2454l7b5j/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     
