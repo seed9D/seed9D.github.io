@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://seed9d.github.io/topic-recommendation/</loc>
+    <lastmod>2021-02-10</lastmod>
+  </url>
+  <url>
+    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
+    <lastmod>2021-02-10</lastmod>
+  </url>
+  <url>
+    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
+    <lastmod>2021-02-10</lastmod>
+  </url>
+  <url>
     <loc>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</loc>
     <lastmod>2021-02-10</lastmod>
   </url>
@@ -27,14 +39,6 @@
   <url>
     <loc>https://seed9d.github.io/word2vec-from-theory-2-implement/</loc>
     <lastmod>2021-02-10</lastmod>
-  </url>
-  <url>
-    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
-    <lastmod>2021-02-10</lastmod>
-  </url>
-  <url>
-    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
-    <lastmod>2021-02-09</lastmod>
   </url>
   <url>
     <loc>https://seed9d.github.io/GBDT-Classifier-step-by-step/</loc>

@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://seed9d.github.io/topic-recommendation/</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://seed9d.github.io/Pytorch-Implement-Skipgram-with-Negative-Sampling/</loc>
     
     <lastmod>2021-02-10</lastmod>
@@ -47,20 +68,6 @@
     <loc>https://seed9d.github.io/word2vec-from-theory-2-implement/</loc>
     
     <lastmod>2021-02-10</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/recognize-keywords-by-entorpy/</loc>
-    
-    <lastmod>2021-02-10</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://seed9d.github.io/title-embedding-with-keywords/</loc>
-    
-    <lastmod>2021-02-09</lastmod>
     
   </url>
   
@@ -166,6 +173,13 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/pytorch/</loc>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/</loc>
     <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

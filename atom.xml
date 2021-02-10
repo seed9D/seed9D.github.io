@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-09T16:28:23.000Z</updated>
+  <updated>2021-02-10T15:47:37.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -17,11 +17,45 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>內容推薦 (3):主題卡片推薦</title>
+    <link href="https://seed9d.github.io/topic-recommendation/"/>
+    <id>https://seed9d.github.io/topic-recommendation/</id>
+    <published>2021-02-10T15:35:59.000Z</published>
+    <updated>2021-02-10T15:47:37.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;什麼是主題卡片推薦？&quot;&gt;&lt;a href=&quot;#什麼是主題卡片推薦？&quot; class=&quot;headerlink&quot; title=&quot;什麼是主題卡片推薦？&quot;&gt;&lt;/a&gt;什麼是主題卡片推薦？&lt;/h1&gt;&lt;p&gt;主題推薦，就是給定一個概念，然後推薦系統圍繞著這個主題將將相關聯的商品推薦給用戶。&lt;/p&gt;
+&lt;p&gt;“主題” 是個超越類目, 產品詞或標籤的存在，他可以是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;旅行出行&lt;/li&gt;
+&lt;li&gt;文青&lt;/li&gt;
+&lt;li&gt;寬鬆顯瘦&lt;/li&gt;
+&lt;li&gt;愛車人&lt;/li&gt;
+&lt;li&gt;追星族&lt;/li&gt;
+&lt;li&gt;愛美&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;等於是把商品池中的類目關係解構又重構出一個新的子集。&lt;/p&gt;
+&lt;p&gt;以用戶端接觸的 UI 來看，主題卡片推薦由兩個構成： Feed 流卡片推薦與 Landing Page 主題推薦。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/categories/recommendation-system/"/>
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/tags/recommendation-system/"/>
+    
+    <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="推薦系統" scheme="https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/"/>
+    
+  </entry>
+  
+  <entry>
     <title>內容推薦 (2) Title Embedding with Keyword</title>
     <link href="https://seed9d.github.io/title-embedding-with-keywords/"/>
     <id>https://seed9d.github.io/title-embedding-with-keywords/</id>
     <published>2021-02-09T15:49:29.000Z</published>
-    <updated>2021-02-09T16:28:23.000Z</updated>
+    <updated>2021-02-10T15:36:50.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;在前篇 &lt;a href=&quot;/recognize-keywords-by-entorpy/&quot; title=&quot;內容推薦 (1) 關鍵詞識別&quot;&gt;內容推薦 (1) 關鍵詞識別&lt;/a&gt; 中，我們利用 entropy 從商品池的 title  中辨識出 product word  &amp;amp; label word  &lt;/p&gt;
@@ -37,6 +71,8 @@
     
     <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
     
+    <category term="推薦系統" scheme="https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/"/>
+    
   </entry>
   
   <entry>
@@ -44,7 +80,7 @@
     <link href="https://seed9d.github.io/recognize-keywords-by-entorpy/"/>
     <id>https://seed9d.github.io/recognize-keywords-by-entorpy/</id>
     <published>2021-02-09T15:18:55.000Z</published>
-    <updated>2021-02-10T04:30:16.000Z</updated>
+    <updated>2021-02-10T15:36:59.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h1&gt;&lt;h2 id=&quot;從內容召回說起&quot;&gt;&lt;a href=&quot;#從內容召回說起&quot; class=&quot;headerlink&quot; title=&quot;從內容召回說起&quot;&gt;&lt;/a&gt;從內容召回說起&lt;/h2&gt;&lt;p&gt;電商推薦系統多路召回中，通常會有一路召回商品叫內容召回 $\text{content I2I}$&lt;/p&gt;
@@ -62,6 +98,8 @@
     <category term="recommendation system" scheme="https://seed9d.github.io/tags/recommendation-system/"/>
     
     <category term="NLP" scheme="https://seed9d.github.io/tags/NLP/"/>
+    
+    <category term="推薦系統" scheme="https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/"/>
     
   </entry>
   
