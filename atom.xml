@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-10T15:47:37.000Z</updated>
+  <updated>2021-02-10T15:53:06.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://seed9d.github.io/topic-recommendation/"/>
     <id>https://seed9d.github.io/topic-recommendation/</id>
     <published>2021-02-10T15:35:59.000Z</published>
-    <updated>2021-02-10T15:47:37.000Z</updated>
+    <updated>2021-02-10T15:53:06.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;什麼是主題卡片推薦？&quot;&gt;&lt;a href=&quot;#什麼是主題卡片推薦？&quot; class=&quot;headerlink&quot; title=&quot;什麼是主題卡片推薦？&quot;&gt;&lt;/a&gt;什麼是主題卡片推薦？&lt;/h1&gt;&lt;p&gt;主題推薦，就是給定一個概念，然後推薦系統圍繞著這個主題將將相關聯的商品推薦給用戶。&lt;/p&gt;
@@ -35,7 +35,8 @@
 &lt;li&gt;愛美&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;等於是把商品池中的類目關係解構又重構出一個新的子集。&lt;/p&gt;
-&lt;p&gt;以用戶端接觸的 UI 來看，主題卡片推薦由兩個構成： Feed 流卡片推薦與 Landing Page 主題推薦。&lt;/p&gt;</summary>
+&lt;p&gt;以用戶端接觸的 UI 來看，主題卡片推薦由兩個構成： Feed 流卡片推薦與 Landing Page 主題推薦。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/7NNjttp.png&quot; style=&quot;zoom: 33%;&quot; /&gt;&lt;/p&gt;</summary>
     
     
     
