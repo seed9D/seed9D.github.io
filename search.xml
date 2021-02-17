@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>透視 XGBoost(0) 總結篇</title>
+      <link href="what-make-XGBoost-so-effective/"/>
+      <url>what-make-XGBoost-so-effective/</url>
+      
+        <content type="html"><![CDATA[<p>此篇總結 透視 XGBoost 系列，建議系列閱讀順序為</p><ol><li><a href="/xgboost-for-regression/" title="透視 XGBoost(1) 圖解 Regression">透視 XGBoost(1) 圖解 Regression</a></li><li><a href="/XGBoost-for-classification/" title="透視 XGBoost(2) 圖解 Classification">透視 XGBoost(2) 圖解 Classification</a></li><li><a href="/XGBoost-General-Objective-Function/" title="透視 XGBoost(3) 蘋果樹下的 objective function">透視 XGBoost(3) 蘋果樹下的 objective function</a></li><li><a href="/XGBoost-cool-optimization/" title="透視 XGBoost(4) 神奇 optimization 在哪裡？">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></li></ol><a id="more"></a><h1 id="XGBoost-通用-objective-function"><a href="#XGBoost-通用-objective-function" class="headerlink" title="XGBoost 通用 objective function"></a>XGBoost 通用 objective function</h1><p>XGBoost 的 loss function 以 second order Taylor Expansion approximate，使的 loss function  存在 first and second order derivative</p><script type="math/tex; mode=display">\begin{aligned}l(y,\hat{y}^{(m-1)} + f_m(x)) \approx l(y, F_{m-1}(x)) + gf_m(x) + \cfrac{1}{2}hf_m(x)^2\end{aligned}</script><p>通用 objective function 使 XGBoost 在 classification, regression, rank 的任務上表達式皆一致</p><script type="math/tex; mode=display">\begin{aligned} \mathcal{\tilde{L}}^{(m)}&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m \end{aligned}</script><p>請參閱 <a href="/XGBoost-General-Objective-Function/" title="透視 XGBoost(3) 蘋果樹下的 objective function">透視 XGBoost(3) 蘋果樹下的 objective function</a></p><h1 id="XGBoost-v-s-GBDT"><a href="#XGBoost-v-s-GBDT" class="headerlink" title="XGBoost v.s. GBDT"></a>XGBoost v.s. GBDT</h1><ul><li>一般 GBDT 用 regression tree 擬合 residuals，本質上是往 negative gradient 方向移動</li><li>XGBoost tree $f_m(x)$ 擬合 residuals，同時考慮 gradient 的方向和 gradient 變化趨勢，這讓他朝 optimal value 移動時顯得更加聰明有效<ul><li>gradient 的方向： first order derivative</li><li>gradient 變化趨勢： second order derivative</li></ul></li></ul><p>請參閱  <a href="/XGBoost-General-Objective-Function/" title="透視 XGBoost(3) 蘋果樹下的 objective function">透視 XGBoost(3) 蘋果樹下的 objective function</a></p><h1 id="What-Makes-XGBoost-so-Effective"><a href="#What-Makes-XGBoost-so-Effective" class="headerlink" title="What Makes XGBoost so Effective?"></a>What Makes XGBoost so Effective?</h1><h2 id="Avoiding-Overfitting"><a href="#Avoiding-Overfitting" class="headerlink" title="Avoiding Overfitting"></a>Avoiding Overfitting</h2><ul><li>Objective function 內加入  regularization term，限制 leaf node 輸出大小 和 leaf node number</li></ul><script type="math/tex; mode=display">\begin{aligned} \mathcal{L}& = [\sum_i^n l(y_i, \hat{y_i}) ] + \sum_{m}\Omega({f_m}) \\& \Omega(f_m) = \tau T_m + \cfrac{1}{2}\lambda \lVert \gamma \rVert ^2\end{aligned}</script><ul><li>可以設置 min_child_weight 限制 each leaf node 的 cover</li><li>可以設置 max_depth 限制  XGB tree 的深度</li><li>Column sampling and Row sampling</li></ul><p>參閱</p><ul><li><a href="/xgboost-for-regression/" title="透視 XGBoost(1) 圖解 Regression">透視 XGBoost(1) 圖解 Regression</a></li><li><a href="/XGBoost-for-classification/" title="透視 XGBoost(2) 圖解 Classification">透視 XGBoost(2) 圖解 Classification</a></li></ul><h2 id="Split-Findding"><a href="#Split-Findding" class="headerlink" title="Split Findding"></a>Split Findding</h2><ul><li>採用 approximate greedy algorithm 選取 candidate split 點，candidate split  基於 weighted quantile 切分</li><li>weighted Quantile Sketch 盡量使 quantiles 間的 summation of weight 相等</li><li>weight 計算直接來自 second derivative of loss function $h_i$</li></ul><p>參閱 <a href="/XGBoost-cool-optimization/" title="透視 XGBoost(4) 神奇 optimization 在哪裡？">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p><h2 id="System-Design"><a href="#System-Design" class="headerlink" title="System Design"></a>System Design</h2><ul><li>數據量大時，將 data samples 切分成 multi blocks 方便 parallel computing<ul><li>訓練前 sorting block 內的 columns values，避免每次分裂皆要對特徵 (columns) 排序</li></ul></li><li>開 thread pre-fetch $g_i \ h_i$， 優化 cache hitting rate</li><li>out-of-core blocks 將放不進  memory 的 block 成塊的放到 hard disks，並在要計算前 pre-fetch to memory using thread</li></ul><p>參閱  <a href="/XGBoost-cool-optimization/" title="透視 XGBoost(4) 神奇 optimization 在哪裡？">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p><h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><ul><li>data samples 內的 missing value (NAs) 可以在訓練時學出來分裂位置</li></ul><p>參閱 <a href="/XGBoost-cool-optimization/" title="透視 XGBoost(4) 神奇 optimization 在哪裡？">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Machine Learning </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> ML </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>透視 XGBoost(4) 神奇 optimization 在哪裡？</title>
       <link href="XGBoost-cool-optimization/"/>
       <url>XGBoost-cool-optimization/</url>
@@ -460,8 +485,8 @@
     
     <entry>
       <title>Hello World</title>
-      <link href="ckl9ms4df000glse29j6j5hzi/"/>
-      <url>ckl9ms4df000glse29j6j5hzi/</url>
+      <link href="ckl9mt7t80019noe29pbrcozg/"/>
+      <url>ckl9mt7t80019noe29pbrcozg/</url>
       
         <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.<br><a id="more"></a></p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
       
