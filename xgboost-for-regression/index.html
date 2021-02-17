@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>透視 XGBoost(1) 圖解 Regression - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Introduction XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$ \begin{aligned} F_m(x) &amp;amp; &amp;#x3D; F_{m-1}(x) + f_m(x)   \\ F_{m-1}(x) &amp;amp;&amp;#x3D; F_0(x) +"><meta property="og:type" content="article"><meta property="og:title" content="透視 XGBoost(1) 圖解 Regression"><meta property="og:url" content="https://seed9d.github.io/xgboost-for-regression/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="Introduction XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$ \begin{aligned} F_m(x) &amp;amp; &amp;#x3D; F_{m-1}(x) + f_m(x)   \\ F_{m-1}(x) &amp;amp;&amp;#x3D; F_0(x) +"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/aaIKrZN.png"><meta property="og:image" content="https://i.imgur.com/pEkt5eh.png"><meta property="og:image" content="https://i.imgur.com/SzfnonV.png"><meta property="og:image" content="https://i.imgur.com/5Y17D5q.png"><meta property="og:image" content="https://i.imgur.com/jaMkskD.png"><meta property="og:image" content="https://i.imgur.com/44NNISC.png"><meta property="og:image" content="https://i.imgur.com/6KGFwF8.png"><meta property="og:image" content="https://i.imgur.com/joY0CTE.png"><meta property="og:image" content="https://i.imgur.com/UUv521Z.png"><meta property="og:image" content="https://i.imgur.com/UUv521Z.png"><meta property="og:image" content="https://i.imgur.com/bxhTRce.png"><meta property="og:image" content="https://i.imgur.com/5bY4jeW.png"><meta property="og:image" content="https://i.imgur.com/mbxR8em.png"><meta property="og:image" content="https://i.imgur.com/TUAqWpn.png"><meta property="og:image" content="https://i.imgur.com/X79go7n.png"><meta property="article:published_time" content="2021-02-16T15:32:16.000Z"><meta property="article:modified_time" content="2021-02-17T15:48:40.000Z"><meta property="article:author" content="seed9D"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/aaIKrZN.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/xgboost-for-regression/"},"headline":"seed9D's blog","image":["https://i.imgur.com/aaIKrZN.png","https://i.imgur.com/pEkt5eh.png","https://i.imgur.com/SzfnonV.png","https://i.imgur.com/5Y17D5q.png","https://i.imgur.com/jaMkskD.png","https://i.imgur.com/44NNISC.png","https://i.imgur.com/6KGFwF8.png","https://i.imgur.com/joY0CTE.png","https://i.imgur.com/UUv521Z.png","https://i.imgur.com/UUv521Z.png","https://i.imgur.com/bxhTRce.png","https://i.imgur.com/5bY4jeW.png","https://i.imgur.com/mbxR8em.png","https://i.imgur.com/TUAqWpn.png","https://i.imgur.com/X79go7n.png"],"datePublished":"2021-02-16T15:32:16.000Z","dateModified":"2021-02-17T15:48:40.000Z","author":{"@type":"Person","name":"seed9D"},"description":"Introduction XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\\text{residual}$ \\begin{aligned} F_m(x) &amp; &#x3D; F_{m-1}(x) + f_m(x)   \\\\ F_{m-1}(x) &amp;&#x3D; F_0(x) +"}</script><link rel="canonical" href="https://seed9d.github.io/xgboost-for-regression/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>透視 XGBoost(1) 圖解 Regression</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-17</time></span><span class="level-item">18 minutes read (About 2657 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p><img src="https://i.imgur.com/aaIKrZN.png" alt="XGBoost"></p>
+<p>XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$</p>
+<script type="math/tex; mode=display">\begin{aligned}
+F_m(x) & = F_{m-1}(x) + f_m(x)  
+\\
+F_{m-1}(x) &= F_0(x) + \sum_{i=0}^{m-1}f_{m-1}(x)
+\end{aligned}</script><p>不同的是，Xgboost 做了大量運算和擬合的優化，這讓他比起傳統 GBDT 更為高效率與有效</p>
+<a id="more"></a>
+<p>跟擬合目標有關的有</p>
+<ul>
+<li>Second Order Tayler Approximation</li>
+<li>Approximate Greedy Algorithm</li>
+<li>Weighted Quantile Sketch</li>
+<li>Sparsity-Aware Split Finding</li>
+</ul>
+<p>跟工程優化有關的有</p>
+<ul>
+<li>Cache - Aware Access</li>
+<li>Block for Out-of-Core Computation</li>
+<li>Parallel Learning</li>
+</ul>
+<p>以下章節主要分兩大塊</p>
+<ol>
+<li><strong>XGBoost for Regression：</strong> 藉由 regression 介紹 XGBoost 如何 train 一棵  XGB tree，以圖文方式說明 XGB tree 如何擬合目標到剪枝。此章節不涉及公式證明，只有少量運算，適合快速理解 XGB 訓練流程</li>
+<li><strong>XGBoost Regression Math Background</strong>：此章節深入討論在前一章節中用到的公式原理，並給予證明，適合深入理解 XGBoost 為何 work</li>
+</ol>
+<p>篇幅關係 XGBoost 的優化手段放在 <a href="/XGBoost-cool-optimization/" title="透視 XGBoost(4) 神奇 optimization 在哪裡？">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p>
+<h1 id="XGBoost-for-Regression"><a href="#XGBoost-for-Regression" class="headerlink" title="XGBoost for Regression"></a>XGBoost for Regression</h1><h2 id="從-gradient-boosting-說起"><a href="#從-gradient-boosting-說起" class="headerlink" title="從 gradient boosting 說起"></a>從 gradient boosting 說起</h2><p><img src="https://i.imgur.com/pEkt5eh.png" alt="GBDT Framework" style="zoom:33%;" /></p>
+<p>XGBoost 跟  gradient boosting algorithm 框架一樣，皆是依序建立多棵樹 $f_1(x), f_2(x), ….,f_M(x)$ 組成模型</p>
+<script type="math/tex; mode=display">F_m(x) = F_0(x) + \nu\sum^m_{i=1} f_i(x) = F_{m-1} + \nu f_{m-1}(x)</script><ul>
+<li>其中第 $m$  步的 tree $f_m(x)$ 是擬合模型 $F_{m-1}(x)$ 預測值 $\text{predicted }$ 與 真實值 $\text{observed}$ 的 $\text{residual}$</li>
+<li>$\nu$ 為 learning rate</li>
+</ul>
+<p>算法差別主要體現在</p>
+<ul>
+<li>objective function 的設計</li>
+<li>Step 2 (B) (C) 建樹，GBDT 是建一顆傳統 regression tree $f_m(x)$ 去擬合 $\text{residual}$;  XGBoost 有自己衡量分裂 gain 的方式去擬合 residual 建立 XGB tree $f_m(x)$</li>
+</ul>
+<p>可以說 XGBoost 用一種比較精準的方式去擬合 residual 建立子樹 $f_m(x)$</p>
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><p>之後用到的例子，數據如下：</p>
+<p>假設有多筆 data sample，目標是用 drug dosage  預測 drug effectiveness </p>
+<p><img src="https://i.imgur.com/SzfnonV.png" style="zoom: 50%;" /></p>
+<h2 id="如何建一顆-XGB-tree-f-m-x"><a href="#如何建一顆-XGB-tree-f-m-x" class="headerlink" title="如何建一顆 XGB tree $f_m(x)$ ?"></a>如何建一顆 XGB tree $f_m(x)$ ?</h2><p>Regression problem 上，XGB 在所有 data sample x 的每個特徵下的值裡尋找最佳分裂點，最終建成一顆 binary tree $f_m(x)$</p>
+<p>建樹的過程涉及</p>
+<ol>
+<li>Fitting Target 擬合目標</li>
+<li>分裂好壞的恆量，如 CART 用 gini gain 衡量分類樹</li>
+<li>Pruning 剪枝</li>
+<li>Output Value 決定每個 leaf node 的唯一輸出</li>
+</ol>
+<h3 id="f-m-x-擬合的目標是什麼？"><a href="#f-m-x-擬合的目標是什麼？" class="headerlink" title="$f_m(x)$ 擬合的目標是什麼？"></a>$f_m(x)$ 擬合的目標是什麼？</h3><p>$f_m(x)$ 擬合的目標是 $\text{residual}$ ，利用   data sample  x  的所有特徵建一顆特殊的 $\text{regression tree}$  去擬合 $\text{residual}$</p>
+<script type="math/tex; mode=display">\text{residual = observed - predicted}</script><p><img src="https://i.imgur.com/5Y17D5q.png" style="zoom:33%;" /></p>
+<p>以 $m=1$  時舉例</p>
+<ul>
+<li>XGBoost  的 predict 初始值 $F_0(x)$，預設皆為 0.5</li>
+</ul>
+<p><img src="https://i.imgur.com/jaMkskD.png" style="zoom: 50%;" /></p>
+<ul>
+<li>ep_0_predict: XGBoost 的初始預測值 $F_0(x)$，預設都是 0.5</li>
+<li>ep_1_residual:  $observed$ 與 $F_0(x)$ 間的  $residual$ 也就是 XGB tree  $f_1(x)$ 要擬合的目標</li>
+</ul>
+<h3 id="建-tree-時如何衡量分裂點好壞？"><a href="#建-tree-時如何衡量分裂點好壞？" class="headerlink" title="建 tree 時如何衡量分裂點好壞？"></a>建 tree 時如何衡量分裂點好壞？</h3><p>建分支時依序在特徵 $\text{Drug Dosage}$ 的 data sample value $\text{[10, 20,  25, 35]}$ 中尋找最優分裂點切分 residual $\text{[-10.5, 6.5, 7.5 -7.5]}$</p>
+<p><img src="https://i.imgur.com/44NNISC.png"  /></p>
+<p>決定分裂點的優劣取決於 $Gain$</p>
+<script type="math/tex; mode=display">Gain = Left_{\text{similarity}} + Right_{\text{similarity}}  - Root_{\text{similarity}} \tag{1}</script><p>分裂 node，會產生 left child node  與  right child node，分別計算三者的  $\text{similarity score}$</p>
+<script type="math/tex; mode=display">\text{Similarity Score} =  \cfrac{(\sum \text{residual})^2}{\text{Number of Residuals } + \lambda} \tag{2}</script><ul>
+<li>$\lambda$ is a regularization parameter，這邊先假設 0</li>
+</ul>
+<p><strong>注意！！ 排序的是 $\text{Drug Dosage}$，分裂點依序在 $\text{Drug Dosage}$ 中找，但被分開到左右子樹的是 $\text{residual}$</strong></p>
+<h3 id="在-data-sample-的特徵-textit-drug-dosage-中找出-gain-最大的做為分裂點"><a href="#在-data-sample-的特徵-textit-drug-dosage-中找出-gain-最大的做為分裂點" class="headerlink" title="在 data sample 的特徵 $\textit{drug dosage}$ 中找出  $gain$  最大的做為分裂點"></a><strong>在 data sample 的特徵 $\textit{drug dosage}$ 中找出  $gain$  最大的做為分裂點</strong></h3><p>以 Dosage &lt; 15 當作分裂點的 $gain = 110.25 + 14.08 - 4 = 120.33$</p>
+<p><img src="https://i.imgur.com/6KGFwF8.png"  /></p>
+<p>以 Dosage &lt; 22.5 當作分裂點的 $gain = 8 + 0 -4 = 4$</p>
+<p><img src="https://i.imgur.com/joY0CTE.png"  /></p>
+<p>顯然以 Dosage &lt; 15 當作分裂點，好於以 Dosage &lt; 22.5 當作分裂點。</p>
+<p>當然，還得把剩下的可能分裂點看完，才能決定最終分裂點。</p>
+<p>找個第一個分裂點，還得找下個子樹的分裂點，如此周而復始，最終得到樹的結構</p>
+<p><img src="https://i.imgur.com/UUv521Z.png"  /></p>
+<h3 id="如何-Pruning"><a href="#如何-Pruning" class="headerlink" title="如何 Pruning ?"></a>如何 Pruning ?</h3><p>XGBoost 對  new tree $f_m(x)$ 的  pruning 建立在 gain 上，透過設定一個 gain threshold $\tau$ 決定是否剪枝</p>
+<p><img src="https://i.imgur.com/UUv521Z.png"  /></p>
+<ul>
+<li>若 $\tau = 130$，則 分裂點 $＂Dosage &lt; 30＂$ 的  $gain = 140.17 &gt; 130 = \tau$，不會被剪枝，因爲子節點沒被剪枝，父節點 $\textit{Dosage &lt; 15}$ 也保留</li>
+<li>若 $\tau =150$，則 分裂點 $＂Dosage &lt; 30＂$ 的  $gain = 140.17 &lt; 150 = \tau$ ，會被剪枝，最終只保留 父節點 $\textit{Dosage &lt; 15}$，因爲需要一個根節點</li>
+</ul>
+<p>P.S. 在 XGBoost 論文裡，gain threshold 的符號是 $\gamma$，但因為 notaion 衝突，這邊換成  $\tau$，對應到工程 hyper parameter min_split_loss </p>
+<h3 id="如何決定-leaf-node-的-output-value"><a href="#如何決定-leaf-node-的-output-value" class="headerlink" title="如何決定 leaf node  的 output value?"></a>如何決定 leaf node  的 output value?</h3><p>決定每個 leaf node 的 output value 公式跟式(2) similarity score 很像，差別在分子部份的 $\text{sum of residuals}$ 是否取平方</p>
+<script type="math/tex; mode=display">\text{output value} = \cfrac{\sum(\text{residuals})}{\text{Number of Residuals} + \lambda}\tag{3}</script><ul>
+<li>$\lambda$ is a regularization parameter，這邊先假設 0</li>
+</ul>
+<p>計算每個 leaf node output value 後</p>
+<p><img src="https://i.imgur.com/bxhTRce.png"  /></p>
+<h3 id="Regularization-term-lambda-的作用"><a href="#Regularization-term-lambda-的作用" class="headerlink" title="Regularization term $\lambda$ 的作用"></a>Regularization term $\lambda$ 的作用</h3><blockquote>
+<p>prevent overfitting in training data</p>
+</blockquote>
+<p>regularization paramater $\lambda$ 的作用是防止 overfitting，$\lambda$ 可以減少 similarity 對 $resiudal$  值的敏感程度</p>
+<script type="math/tex; mode=display">\text{Similarity Score} =  \cfrac{(\sum \text{residual})^2}{\text{Number of Residuals } + \lambda}</script><p>若 $\lambda &gt; 0$ 值越大則分母越大， similarity score 會越小，代表分子  $\text{sum of residual }$ 的作用越小</p>
+<p>similarity score 越小</p>
+<ol>
+<li>similarity score 越小，在分裂階段，分裂點的 $Gain = Left_{Similarity} + Right_{similarity}  - Root_{similarity}$  就越小<ul>
+<li>$\lambda$ 對不同 node  的影響是非線性的</li>
+</ul>
+</li>
+<li>similarity score 越小 ， gain 也越小，在剪枝階段，其被剪枝的可能性越大。</li>
+</ol>
+<h2 id="如何整合多棵樹-f-1-x-f-2-x-…-f-m-x-的輸出"><a href="#如何整合多棵樹-f-1-x-f-2-x-…-f-m-x-的輸出" class="headerlink" title="如何整合多棵樹 $f_1(x), f_2(x),…,f_m(x)$ 的輸出"></a>如何整合多棵樹 $f_1(x), f_2(x),…,f_m(x)$ 的輸出</h2><p>$F_M(x)$ 的計算與 GBDT 一樣</p>
+<script type="math/tex; mode=display">F_M(x) = F_0(x) + \nu\sum^M_{i=1} f_i(x) = F_{M-1} + \nu f_m(x)</script><p><img src="https://i.imgur.com/5bY4jeW.png" style="zoom:50%;" /></p>
+<p>假設只建立一顆 XGB tree $f_1(x)$，  $\text{learning rate = 0.8}$</p>
+<p><img src="https://i.imgur.com/mbxR8em.png"  /></p>
+<p>則每個  data sample 新的 prediction 為</p>
+<script type="math/tex; mode=display">F_1(x) = F_0(x) + 0.8* f_1(x)</script><p><img src="https://i.imgur.com/TUAqWpn.png" style="zoom:50%;" /></p>
+<ul>
+<li>ep_0_predict 表  $F_0(x)$ 對每個 data sample 的預測值， XGBoost 初始預設值是 0.5</li>
+<li>ep_1_leaf_output 表 data sample 在  XGB tree $f_1(x)$ 下所屬  leaf node 的輸出值，其值擬合  ep_1_residual</li>
+<li>ep_1_predict 表 $F_1(x)$ 表 data sample 在  $m=1$ 的預測值</li>
+</ul>
+<h1 id="XGBoost-Regression-Math-Background"><a href="#XGBoost-Regression-Math-Background" class="headerlink" title="XGBoost Regression Math Background"></a>XGBoost Regression Math Background</h1><h3 id="XGBoost-的通用-Objective-Function"><a href="#XGBoost-的通用-Objective-Function" class="headerlink" title="XGBoost 的通用 Objective Function"></a>XGBoost 的通用 Objective Function</h3><script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m 
+
+\end{aligned} \tag{4}</script><ul>
+<li>$g_i$ 為 first derivative of loss function  related to data sample $x_i$ :  $g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, \hat{y_i})$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$:  $h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, \hat{y_i})$</li>
+<li>$T_m$ is the number of leaf in tree $f_m$</li>
+<li>$\tau$ 表對 $T_m$ 的 factor</li>
+<li>$\gamma_{j,m}$ 表 $m$ 步 XGB tree $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+<li>$R_{m, j}$表 m 步 XGB tree $f_m$ 下 第 $j$ 個 leaf node 得 data sample 集合</li>
+</ul>
+<p>optimal output $\gamma_{j,m}^*$ of leaf node $j$ </p>
+<script type="math/tex; mode=display">\gamma_{j,m}^*=- \cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda}  \tag{5}</script><p>詳細推導參閱 <a href="/XGBoost-General-Objective-Function/" title="透視 XGBoost(3) 蘋果樹下的 objective function">透視 XGBoost(3) 蘋果樹下的 objective function</a></p>
+<h2 id="Regression-Leaf-output-公式怎麼來的？"><a href="#Regression-Leaf-output-公式怎麼來的？" class="headerlink" title="Regression Leaf output 公式怎麼來的？"></a>Regression Leaf output 公式怎麼來的？</h2><blockquote>
+<p>式(3) each leaf node 的 output 公式怎麼得出的？</p>
+</blockquote>
+<script type="math/tex; mode=display">\text{output value} = \cfrac{\sum(\text{residuals})}{\text{Number of Residuals} + \lambda}\tag{3}</script><p>從式 (5)，可以直接求 regression 的 optimal leaf node output </p>
+<p>regression 的 loss 通常是 square error ，先將 $l(y_i, \hat{y_i}) = \cfrac{1}{2}(y_i - \hat{y_i})^2$  代入 $h_i, g_i$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+g_i &= -(y_i - \hat{y}_i) = \text{negative residual} \\
+
+h_i &= \cfrac{d}{d \ \hat{y}_i} -(y_i - \hat{y_i}) = 1
+\end{aligned}</script><p>代入 式(5) 得到 $\gamma_{j,m}^*$</p>
+<script type="math/tex; mode=display">\gamma_{j,m} = \cfrac{\sum_{i \in R_{j,m}}(y_i - F_{m-1}(x_i))}{(\sum_{i \in R_{j,m}}1) + \lambda} = \cfrac{\text{sum of residual}}{\text{number of residual } + \lambda }</script><ul>
+<li>$i \in R_{j,m}$ 表 leaf node $j$ 下的  data sample $x_i$</li>
+<li>$\lambda$  is a regularization parameter</li>
+</ul>
+<p>故得證 XGB tree $f_m(x)$ for regression each leaf node $j$  的輸出為</p>
+<script type="math/tex; mode=display">\gamma_{j,m}  = \cfrac{\text{sum of residual}}{\text{number of residual } + \lambda }</script><h2 id="Regression-的-Similarity-Score-怎麼來的？"><a href="#Regression-的-Similarity-Score-怎麼來的？" class="headerlink" title="Regression 的 Similarity Score 怎麼來的？"></a>Regression 的 Similarity Score 怎麼來的？</h2><blockquote>
+<p>式 (2) similarity score 怎麼得出的</p>
+</blockquote>
+<script type="math/tex; mode=display">\text{Similarity Score} =  \cfrac{(\sum \text{residual})^2}{\text{Number of Residuals } + \lambda} \tag{2}</script><p>XGBoost  分裂的目的是要使 式(4) objective function 越小越好，怎麼評判分裂前後收益？式(1) 評價了分裂後 left/right leaf node 可以得到的＂score＂與分裂前 root node 的 ＂score＂ 差值計算分裂前後增益 gain</p>
+<script type="math/tex; mode=display">Gain = Left_{\text{similarity}} + Right_{\text{similarity}}  - Root_{\text{similarity}} \tag{1}</script><p>所以 similarity score 肯定得跟 objective  function 有關，才能正確的恆量 gain，但 similarity score 是 ＂score “ 越大越好， objective function 是要 minimize 的，得越小越好，兩者如何扯上關係？</p>
+<p>觀察一下 objective function</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m 
+
+\end{aligned}  \tag{4}</script><p>因為我們要衡量單個 node 得 gain，式 (4)中，跟某個 node 直接相關的 part 為 summation of all leaf node 裡面的 equation </p>
+<script type="math/tex; mode=display">[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] \tag{6}</script><ul>
+<li>$R_{m, j}$表 m 步 XGB tree $f_m$ 下 第 $j$ 個 leaf node 得 data sample 集合</li>
+</ul>
+<p>將 式(5) 代入 式(6) 可以得出 式(6)的極小值</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2 &= 
+
+-（\sum_{i \in R_{j,m}}g_i)\cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda} 
++ \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)(\cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda})^2  \\
+
+& =  -\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} + \cfrac{1}{2} 
+\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} \\
+
+& = -\cfrac{1}{2}\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} 
+\end{aligned} \tag{7}</script><p>因爲要的是 ＂score＂ ，所以讓 loss 對 x 軸做對稱，拿掉係數項 $\frac{1}{2}$ </p>
+<script type="math/tex; mode=display">\text{Similarity Score} = \cfrac{(\sum g_i)^2}{\sum h_i + \lambda} \tag{8}</script><ul>
+<li><p>$g_i$ 為 first derivative of loss function  related to data sample $x_i$ :  $g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, \hat{y_i})$</p>
+</li>
+<li><p>$h_i$ 為 second derivative of loss function related to data sample $x_i$:  $h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, \hat{y_i})$</p>
+</li>
+<li><p>因爲要的是 ＂score＂ ，所以讓 loss 對 x 軸做對稱，拿掉係數項 $\frac{1}{2}$</p>
+<p><img src="https://i.imgur.com/X79go7n.png" style="zoom:33%;" /></p>
+</li>
+</ul>
+<p>式 (8) 中的 $g_i, h_i$ 分別表 loss function $l(y,\hat{y})$ 的 first derivative and second derivative </p>
+<p>當 loss function 為 square error 時</p>
+<ul>
+<li>$g_i = -(y_i - \hat{y}_i) = \text{negative residual}$</li>
+<li>$h_i = \cfrac{d}{d \ \hat{y}_i} -(y_i - \hat{y_i}) = 1$</li>
+</ul>
+<p>代入式(8) 得到 square error 下的 similarity score，得證：</p>
+<script type="math/tex; mode=display">\text{Similarity Score} =  \cfrac{(\sum g_i)^2}{\sum h_i + \lambda} =  \cfrac{(\sum \text{residual})^2}{\text{Number of Residuals } + \lambda}</script><h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 13-17-Augu, 785–794. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a></li>
+<li>What makes “XGBoost” so Extreme? <a target="_blank" rel="noopener" href="https://medium.com/analytics-vidhya/what-makes-xgboost-so-extreme-e1544a4433bb">https://medium.com/analytics-vidhya/what-makes-xgboost-so-extreme-e1544a4433bb</a><ul>
+<li>XGBoost-from-scratch-python</li>
+</ul>
+</li>
+<li>Boosting algorithm: XGBoost <a target="_blank" rel="noopener" href="https://towardsdatascience.com/boosting-algorithm-xgboost-4d9ec0207d">https://towardsdatascience.com/boosting-algorithm-xgboost-4d9ec0207d</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.hrwhisper.me/machine-learning-xgboost/#blocks-for-out-of-core-computation">https://www.hrwhisper.me/machine-learning-xgboost/</a></li>
+</ul>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OtD8wVaFm6E">XGBoost Part 1 (of 4): Regression</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ZVFeW798-2I&amp;t=19s">XGBoost Part 3 (of 4): Mathematical Details</a></p>
+</li>
+</ul>
+<ul>
+<li><p>my post</p>
+<ul>
+<li><a href="/GBDT-Rregression-Tree-Step-by-Step/" title="一步步透視 GBDT Regression Tree">一步步透視 GBDT Regression Tree</a>
+</li>
+<li><a href="/GBDT-Classifier-step-by-step/" title="一步步透視 GBDT Classifier">一步步透視 GBDT Classifier</a>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>透視 XGBoost(1) 圖解 Regression</p><p><a href="https://seed9d.github.io/xgboost-for-regression/">https://seed9d.github.io/xgboost-for-regression/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-16</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-17</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/XGBoost-for-classification/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">透視 XGBoost(2) 圖解 Classification</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/topic-recommendation/"><span class="level-item">內容推薦 (3):主題卡片推薦</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "0ccae56c0bec023e62dbb50d59cf4fcd",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Introduction"><span class="level-left"><span class="level-item">Introduction</span></span></a></li><li><a class="level is-mobile" href="#XGBoost-for-Regression"><span class="level-left"><span class="level-item">XGBoost for Regression</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#從-gradient-boosting-說起"><span class="level-left"><span class="level-item">從 gradient boosting 說起</span></span></a></li><li><a class="level is-mobile" href="#Data"><span class="level-left"><span class="level-item">Data</span></span></a></li><li><a class="level is-mobile" href="#如何建一顆-XGB-tree-f-m-x"><span class="level-left"><span class="level-item">如何建一顆 XGB tree $f_m(x)$ ?</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#f-m-x-擬合的目標是什麼？"><span class="level-left"><span class="level-item">$f_m(x)$ 擬合的目標是什麼？</span></span></a></li><li><a class="level is-mobile" href="#建-tree-時如何衡量分裂點好壞？"><span class="level-left"><span class="level-item">建 tree 時如何衡量分裂點好壞？</span></span></a></li><li><a class="level is-mobile" href="#在-data-sample-的特徵-textit-drug-dosage-中找出-gain-最大的做為分裂點"><span class="level-left"><span class="level-item">在 data sample 的特徵 $\textit{drug dosage}$ 中找出  $gain$  最大的做為分裂點</span></span></a></li><li><a class="level is-mobile" href="#如何-Pruning"><span class="level-left"><span class="level-item">如何 Pruning ?</span></span></a></li><li><a class="level is-mobile" href="#如何決定-leaf-node-的-output-value"><span class="level-left"><span class="level-item">如何決定 leaf node  的 output value?</span></span></a></li><li><a class="level is-mobile" href="#Regularization-term-lambda-的作用"><span class="level-left"><span class="level-item">Regularization term $\lambda$ 的作用</span></span></a></li></ul></li><li><a class="level is-mobile" href="#如何整合多棵樹-f-1-x-f-2-x-…-f-m-x-的輸出"><span class="level-left"><span class="level-item">如何整合多棵樹 $f_1(x), f_2(x),…,f_m(x)$ 的輸出</span></span></a></li></ul></li><li><a class="level is-mobile" href="#XGBoost-Regression-Math-Background"><span class="level-left"><span class="level-item">XGBoost Regression Math Background</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#XGBoost-的通用-Objective-Function"><span class="level-left"><span class="level-item">XGBoost 的通用 Objective Function</span></span></a></li></ul><li><a class="level is-mobile" href="#Regression-Leaf-output-公式怎麼來的？"><span class="level-left"><span class="level-item">Regression Leaf output 公式怎麼來的？</span></span></a></li><li><a class="level is-mobile" href="#Regression-的-Similarity-Score-怎麼來的？"><span class="level-left"><span class="level-item">Regression 的 Similarity Score 怎麼來的？</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-17T15:20:35.000Z">2021-02-17</time></p><p class="title"><a href="/what-make-XGBoost-so-effective/">透視 XGBoost(0) 總結篇</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-17T02:00:16.000Z">2021-02-17</time></p><p class="title"><a href="/XGBoost-cool-optimization/">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T16:17:27.000Z">2021-02-17</time></p><p class="title"><a href="/XGBoost-General-Objective-Function/">透視 XGBoost(3) 蘋果樹下的 objective function</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T15:48:04.000Z">2021-02-16</time></p><p class="title"><a href="/XGBoost-for-classification/">透視 XGBoost(2) 圖解 Classification</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T15:32:16.000Z">2021-02-16</time></p><p class="title"><a href="/xgboost-for-regression/">透視 XGBoost(1) 圖解 Regression</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">19</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">6</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

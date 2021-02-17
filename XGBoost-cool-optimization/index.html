@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>透視 XGBoost(4) 神奇 optimization 在哪裡？ - seed9D&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="seed9D&#039;s blog"><meta name="msapplication-TileImage" content="/images/seed.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="seed9D&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="XGBoost 不只在算法上的改造，真正讓 XGBoost  大放異彩的是與工程優化的結合，這讓 XGBoost 在工業上可以應用於大規模數據的處理。  Approximate Greedy Algorithm Weighted Quantile Sketch &amp;amp; Parallel Learning Sparsity-Aware Split Finding System Design  A"><meta property="og:type" content="article"><meta property="og:title" content="透視 XGBoost(4) 神奇 optimization 在哪裡？"><meta property="og:url" content="https://seed9d.github.io/XGBoost-cool-optimization/"><meta property="og:site_name" content="seed9D&#039;s blog"><meta property="og:description" content="XGBoost 不只在算法上的改造，真正讓 XGBoost  大放異彩的是與工程優化的結合，這讓 XGBoost 在工業上可以應用於大規模數據的處理。  Approximate Greedy Algorithm Weighted Quantile Sketch &amp;amp; Parallel Learning Sparsity-Aware Split Finding System Design  A"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://i.imgur.com/UKj8mpu.png"><meta property="og:image" content="https://i.imgur.com/YHuqQZp.png"><meta property="og:image" content="https://i.imgur.com/AbduJM0.png"><meta property="og:image" content="https://i.imgur.com/AcNFVLz.png"><meta property="og:image" content="https://i.imgur.com/TXF7jQr.png"><meta property="og:image" content="https://i.imgur.com/nrDFXhT.png"><meta property="og:image" content="https://i.imgur.com/JBZxzNm.png"><meta property="og:image" content="https://i.imgur.com/3w2Lstm.png"><meta property="og:image" content="https://i.imgur.com/0OVDOLf.png"><meta property="og:image" content="https://i.imgur.com/KdIWcV6.png"><meta property="og:image" content="https://i.imgur.com/DsVlh0v.png"><meta property="og:image" content="https://i.imgur.com/ZeMRcEw.png"><meta property="og:image" content="https://i.imgur.com/00pPuhe.png"><meta property="article:published_time" content="2021-02-17T02:00:16.000Z"><meta property="article:modified_time" content="2021-02-17T15:30:38.000Z"><meta property="article:author" content="seed9D"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://i.imgur.com/UKj8mpu.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://seed9d.github.io/XGBoost-cool-optimization/"},"headline":"seed9D's blog","image":["https://i.imgur.com/UKj8mpu.png","https://i.imgur.com/YHuqQZp.png","https://i.imgur.com/AbduJM0.png","https://i.imgur.com/AcNFVLz.png","https://i.imgur.com/TXF7jQr.png","https://i.imgur.com/nrDFXhT.png","https://i.imgur.com/JBZxzNm.png","https://i.imgur.com/3w2Lstm.png","https://i.imgur.com/0OVDOLf.png","https://i.imgur.com/KdIWcV6.png","https://i.imgur.com/DsVlh0v.png","https://i.imgur.com/ZeMRcEw.png","https://i.imgur.com/00pPuhe.png"],"datePublished":"2021-02-17T02:00:16.000Z","dateModified":"2021-02-17T15:30:38.000Z","author":{"@type":"Person","name":"seed9D"},"description":"XGBoost 不只在算法上的改造，真正讓 XGBoost  大放異彩的是與工程優化的結合，這讓 XGBoost 在工業上可以應用於大規模數據的處理。  Approximate Greedy Algorithm Weighted Quantile Sketch &amp; Parallel Learning Sparsity-Aware Split Finding System Design  A"}</script><link rel="canonical" href="https://seed9d.github.io/XGBoost-cool-optimization/"><link rel="icon" href="/images/seed.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="seed9D's blog" type="application/atom+xml">
+</head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><i class="fas fa-angle-double-right"></i>透視 XGBoost(4) 神奇 optimization 在哪裡？</h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-17</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-17</time></span><span class="level-item">23 minutes read (About 3515 words)</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>&nbsp;visits</span></div></div><div class="content"><p>XGBoost 不只在算法上的改造，真正讓 XGBoost  大放異彩的是與工程優化的結合，這讓 XGBoost 在工業上可以應用於大規模數據的處理。</p>
+<ul>
+<li>Approximate Greedy Algorithm</li>
+<li>Weighted Quantile Sketch &amp; Parallel Learning</li>
+<li>Sparsity-Aware Split Finding</li>
+<li>System Design</li>
+</ul>
+<h1 id="Approximate-Greedy-Algorithm"><a href="#Approximate-Greedy-Algorithm" class="headerlink" title="Approximate Greedy Algorithm"></a>Approximate Greedy Algorithm</h1><blockquote>
+<p>XGBoost 有兩種 split finding  策略，Exact Greedy and Approximate Greedy</p>
+</blockquote>
+<p>data sample 量小的情況下， XGB tree 在建立分支時，會逐一掃過每個可能分裂點 (已對特徵值排序) 計算 similarity score  跟 gain， 即是 greedy  algorithm。</p>
+<p><img src="https://i.imgur.com/UKj8mpu.png" alt=""></p>
+<p>greedy algorithm 會窮舉所有可能分裂點，因此能達到最準確的結果，因為他把所有可能的結果都看過一遍後選了一個最佳的。</p>
+<p>但如果 data sample  不僅數量多 (row)，特徵維度也多 (columns)，採用 greedy algorithm，雖然準確卻也沒效率。</p>
+<a id="more"></a>
+<p>因此在數據量大的情況下，XGBoost 只會選出多個切分點，稱為 candidate splits ，這樣就能大幅降低計算量，此即 Approximate Greedy Algorithm，candidate splits 越多也意味更加耗時。</p>
+<p><img src="https://i.imgur.com/YHuqQZp.png" style="zoom: 33%;" /></p>
+<h2 id="怎麼找-Candidate-Splits"><a href="#怎麼找-Candidate-Splits" class="headerlink" title="怎麼找 Candidate Splits ?"></a>怎麼找 Candidate Splits ?</h2><blockquote>
+<p>XGBoost proposes candidate splitting points according to percentiles of feature distribution</p>
+</blockquote>
+<p>XGBoost  原則上是利用 data sample 的 feature 分佈的 quantiles 尋找 candidate splits，為什麼說是原則上呢，因為跟一般的 quantiles 有點不同，這留到 Weighted Quantile Sketch 章節再細說。</p>
+<h3 id="phi-Quantiles-計算"><a href="#phi-Quantiles-計算" class="headerlink" title="$\phi$ - Quantiles 計算"></a>$\phi$ - Quantiles 計算</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data:  [<span class="number">39.</span> <span class="number">21.</span> <span class="number">24.</span> <span class="number">61.</span> <span class="number">81.</span> <span class="number">11.</span> <span class="number">89.</span> <span class="number">56.</span> <span class="number">12.</span> <span class="number">51.</span>]</span><br><span class="line">sort:  [<span class="number">11.</span> <span class="number">12.</span> <span class="number">21.</span> <span class="number">24.</span> <span class="number">39.</span> <span class="number">51.</span> <span class="number">56.</span> <span class="number">61.</span> <span class="number">81.</span> <span class="number">89.</span>]</span><br><span class="line">rank:  [ <span class="number">1.</span>  <span class="number">2.</span>  <span class="number">3.</span>  <span class="number">4.</span>  <span class="number">5.</span>  <span class="number">6.</span>  <span class="number">7.</span>  <span class="number">8.</span>  <span class="number">9.</span> <span class="number">10.</span>]</span><br></pre></td></tr></table></figure>
+<p>以上總共 $N=10$ 筆 data  則</p>
+<ul>
+<li>$\phi = 0.1$ ⇒  0.1  quantile   ⇒ $0.1*10 = 1$ ⇒  rank = 1 ⇒ 11，故 0.1 quantile = 11</li>
+<li>$\phi = 0.5$ ⇒  0.5  quantile   ⇒ $0.5 * 10 = 5$ ⇒  rank = 5 ⇒ 39， 故 0.5 quantile = 39</li>
+</ul>
+<p>可以發現 $\phi N$ 就是在找 rank 與其對應的 data  值，下面是一個  <code>quantiles = [0.1, 0.3, 0.5, 0.6, 0.9]</code> 的例子</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">quantiles 	 [<span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.9</span>]</span><br><span class="line">rank query	 [<span class="number">1.0</span>, <span class="number">3.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">9.0</span>]</span><br><span class="line">data query 	 [<span class="number">11</span>, <span class="number">21</span>, <span class="number">39</span>, <span class="number">51</span>, <span class="number">81</span>]</span><br></pre></td></tr></table></figure>
+<p>但 $\phi$ - Quantiles 在數據量大時難以對所有 data sample 排序，更遑論找確切的 candidate splits。</p>
+<p>所以 XGBoost 採用了 $\epsilon \text{-approximate} \ \phi  \text{-quantiles}$ 的思想來得到近似的 candidate splite ，容許 $\phi N$ 找出的 rank 有一定誤差 $\varepsilon N$。 </p>
+<h3 id="epsilon-text-approximate-phi-text-quantiles"><a href="#epsilon-text-approximate-phi-text-quantiles" class="headerlink" title="$\epsilon \text{-approximate} \ \phi  \text{-quantiles}$"></a>$\epsilon \text{-approximate} \ \phi  \text{-quantiles}$</h3><p>$\epsilon \text{-approximate}$ 容許找出的 rank 落在一定範圍內： </p>
+<script type="math/tex; mode=display">⁍</script><ul>
+<li>$\varepsilon=0.1$ , 0.1 quantile ⇒ {11, 12}</li>
+<li>$\varepsilon =0.1$ , 0.2 quantile ⇒ {11, 12, 21}</li>
+<li>$\varepsilon =0.1$  ,  0.3 quantile ⇒ {12, 21, 24}</li>
+</ul>
+<p>換句話說，在區間內的值都可以作為 candidate splits，當 $\varepsilon =0.1$    <code>quantiles = [0.1, 0.3, 0.5, 0.6, 0.9]</code> 下，可以接受的 rank 與對應的 data 值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">quantile: <span class="number">0.1</span></span><br><span class="line">	 query rank: [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">	 query data: [<span class="number">11</span>, <span class="number">12</span>]</span><br><span class="line">quantile: <span class="number">0.3</span></span><br><span class="line">	 query rank: [<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span><br><span class="line">	 query data: [<span class="number">12</span>, <span class="number">21</span>, <span class="number">24</span>]</span><br><span class="line">quantile: <span class="number">0.5</span></span><br><span class="line">	 query rank: [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</span><br><span class="line">	 query data: [<span class="number">24</span>, <span class="number">39</span>, <span class="number">51</span>]</span><br><span class="line">quantile: <span class="number">0.6</span></span><br><span class="line">	 query rank: [<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>]</span><br><span class="line">	 query data: [<span class="number">39</span>, <span class="number">51</span>, <span class="number">56</span>]</span><br><span class="line">quantile: <span class="number">0.9</span></span><br><span class="line">	 query rank: [<span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]</span><br><span class="line">	 query data: [<span class="number">61</span>, <span class="number">81</span>, <span class="number">89</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="ε-Approximate-Quantile-Summary"><a href="#ε-Approximate-Quantile-Summary" class="headerlink" title="ε-Approximate Quantile Summary"></a>ε-Approximate Quantile Summary</h3><blockquote>
+<p>An ε-approximate quantile summary of a sequence of N elements is a data structure that can answer quantile queries about the sequence to within a precision of εN</p>
+</blockquote>
+<p>因爲在區間內的值都可以作為 candidate splits，可以看出 quantiles 之間 query 出來的 rank 會有 overlapping，於是我們可以只選取特定幾個 quantiles，每個 quantile 只需要保存 $[\lfloor (\phi -\epsilon)\times N \rfloor , \lfloor (\phi + \epsilon) \times N\rfloor ]$ 中的代表的 rank 值 (最小值 and 最大值) 即可。</p>
+<p>例如 $\varepsilon = 0.1$ ，<code>quantiles = [0.1, 0.3, 0.5, 0.6, 0.9]</code> ，分別選定 rank 區間內的最大值做為 summary:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">quantiles:     [<span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.9</span>]</span><br><span class="line">rank summary:  [<span class="number">2</span>,   <span class="number">4</span>,   <span class="number">6</span>,    <span class="number">7</span>,  <span class="number">10</span>]</span><br><span class="line">query data:    [<span class="number">12</span>, <span class="number">24</span>,  <span class="number">51</span>,   <span class="number">56</span>,  <span class="number">89</span>]</span><br></pre></td></tr></table></figure>
+<p>在使用時也很簡單：</p>
+<ul>
+<li>找 0.1 quantile ⇒ rank =2 ⇒ 12 ⇒ 0.1 quantile = 12</li>
+<li>找 0.8 quantile ⇒ rank = $0.8 * 10 = 8$ ⇒ 與 8 最接近的 rank 為 7 ⇒ 56 ⇒ 0.8 quantile = 56</li>
+</ul>
+<p>因此在 data samples 很大的情況下，一台運算機器無法將所有 data samples 存放進 memory 時，可以透過近似的方式找出 quantile 代表的值做為 candidate split。</p>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1><h1 id="Weighted-Quantile-Sketch-amp-Parallel-Learning"><a href="#Weighted-Quantile-Sketch-amp-Parallel-Learning" class="headerlink" title="Weighted Quantile Sketch &amp; Parallel Learning"></a>Weighted Quantile Sketch &amp; Parallel Learning</h1><p>上面提到 XGBoost 在數據量大的時候，會採用 Approximate Greedy Algorithm 選出多個 candidate splits ，加快運算效率。</p>
+<p>問題是分佈運算 (Parallel Learning) 時要怎麼 approximate quantiles？</p>
+<h3 id="Parallel-Learning-下的-quantiles"><a href="#Parallel-Learning-下的-quantiles" class="headerlink" title="Parallel Learning 下的  quantiles"></a>Parallel Learning 下的  quantiles</h3><p>簡單來說， data samples 會被拆成很多份在不同的運算單元計算某個特徵值的 gain and similarity score，但計算過程需要全局 data samples 的特徵 distribution 才有辦法算出 approximate quantiles ，因此各個運算單元會彙整 (merge) 出一張 approximate histogram，然後在這張 histogram 上計算 $\varepsilon$-approximate quantiles </p>
+<p><img src="https://i.imgur.com/AbduJM0.png" style="zoom:50%;" /></p>
+<h2 id="什麼是-Weighted-Quantile-Sketch"><a href="#什麼是-Weighted-Quantile-Sketch" class="headerlink" title="什麼是 Weighted Quantile Sketch?"></a>什麼是 Weighted Quantile Sketch?</h2><p>每筆 data sample 都帶有 weight，XGBoost 在 計算 approximate quantiles 時，盡量確保每個 quantiles 之間的 $\text{sum of data weight}$ 是差不多的的，而一般的 quantiles 是確保 quantiles 之間的 data 數量相同，此即 weighted quantile </p>
+<p>下面這張 weighted quantile sketch 示意圖，展示每個 quantile 的 sum of data weight 皆等於 10，</p>
+<p><img src="https://i.imgur.com/AcNFVLz.png" style="zoom: 33%;" /></p>
+<p>示意圖，參考就好</p>
+<h2 id="為什麼需要-Weighted-Quantile-Sketch？"><a href="#為什麼需要-Weighted-Quantile-Sketch？" class="headerlink" title="為什麼需要 Weighted Quantile Sketch？"></a>為什麼需要 Weighted Quantile Sketch？</h2><blockquote>
+<p>Put observation with low confidence into quantiles with fewer observation</p>
+</blockquote>
+<p>以分類問題當例子，假設我們有六筆 data samples 如下</p>
+<p><img src="https://i.imgur.com/TXF7jQr.png" style="zoom:33%;" /></p>
+<p>如果按照數量決定 quantiles，紅框內的兩個 data sample  不管怎樣都會被分在一起分不開。</p>
+<p>再看 classification leaf node 的 output value 公式</p>
+<script type="math/tex; mode=display">\text{Output Value} = \cfrac{(\sum \text{residual}_i)}{\sum[(\text{previous probability}_i) (1 - \text{previous probability}_i)] + \lambda}</script><p>兩者的 residual  一正一負，剛好會互相 cancel，這對於 predicted probability 的收斂有負面影響。</p>
+<p>如果依照 weight 來切分，盡可能使每個 quantile 的 sum of weight 相等， 就有機會將兩者分開到不同 leaf node 下</p>
+<p><img src="https://i.imgur.com/nrDFXhT.png" style="zoom:33%;" /></p>
+<p>data sample $x_i$ 的 weight 應該要反映出 $F(x_i)$ 的預測值的 confidence，在分類問題中，predicted probability  在 0.5 附近時，代表 classifier  其實不確定 data sample $x_i$ 屬於 positive or negative， 所以 XGBoost 利用 weight quantile 加大 $x_i$的 weight 讓 XGB tree  $f$ 在分裂時更可以考慮到 $x_i$。</p>
+<p>Weight Quantile 的實際作用為讓 low confidence 的 data sample 有更高的 weight，以便在計算 candidate split 時， low confidence 的 data sample 能跟 hight confidence 的 data sample 分開來 split</p>
+<h2 id="那每筆-data-的-weight-怎麼來的？"><a href="#那每筆-data-的-weight-怎麼來的？" class="headerlink" title="那每筆 data 的 weight 怎麼來的？"></a>那每筆 data 的 weight 怎麼來的？</h2><p>每筆 data 的 weight 其實就是通用 objective function 裡的 <strong>second derivative</strong> of the loss function $h_i$</p>
+<p>參見 <a href="/XGBoost-General-Objective-Function/" title="透視 XGBoost(3) 蘋果樹下的 objective function">透視 XGBoost(3) 蘋果樹下的 objective function</a></p>
+<script type="math/tex; mode=display">\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m 
+\end{aligned}</script><ul>
+<li>$g_i$ 為 first derivative of loss function  related to data sample $x_i$ :  $g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, F_{m-1}(x_i))$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$:  $h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, F_{m-1}(x_i))$</li>
+<li>$T_m$ is the number of leaf in tree $f_m$</li>
+<li>$\tau$ 表對 $T_m$ 的 factor</li>
+<li>$\gamma_{j,m}$ 表 $m$ 步 XGB tree $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+</ul>
+<p><strong>Proof:</strong></p>
+<p>從 objective function 開始推導</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}& = [
+\sum_i^n( g_if_m(x_i) + \cfrac{1}{2}h_if_m(x_i)^2)
+ ] + \Omega(f_m)  \\
+& = \sum^n_{i=1}\cfrac{1}{2} h_i(f_m(x_i) + \cfrac{g_i}{h_i})^2 + \Omega(f_m) - \cfrac{1}{2}\sum^n_{x}\cfrac{g_i^2}{h_i} \\
+
+& = \sum^n_{i=1}\cfrac{1}{2} h_i(f_m(x_i) + \cfrac{g_i}{h_i})^2 + \Omega(f_m) + constant
+\end{aligned}</script><ul>
+<li>regularization term  $\Omega({f_m} ) =\tau T_m + \cfrac{1}{2}\lambda \sum^T_{j} \gamma_{m,j}^2$</li>
+<li>$g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, F_{m-1}(x_i))$，已知項</li>
+<li>$h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, F_{m-1}(x_i))$ ，已知項</li>
+</ul>
+<p>仔細觀察，each data sample is weighted by $h_i$ </p>
+<script type="math/tex; mode=display">\cfrac{1}{2} h_i(f_m(x_i) -(-\cfrac{g_i}{h_i}))^2 \hAar \text{weight}(x - b)^2</script><ul>
+<li>因為是求 weight ，係數項只是 scalar，所有 data sample 都乘一樣的值，相當於不用乘</li>
+<li>論文中這一段堆導應該是筆誤了，少了一個負號</li>
+</ul>
+<p>故得證 each data sample $x_i$’s weight is actually its second derivative of the loss function $h_i$</p>
+<script type="math/tex; mode=display">\text{data sample weight } = h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, F_{m-1}(x_i))</script><h3 id="Regression-下-data-sample-weight"><a href="#Regression-下-data-sample-weight" class="headerlink" title="Regression 下 data sample weight"></a>Regression 下 data sample weight</h3><blockquote>
+<p>已知 data sample $x_i$’s weight is actually its second derivative of the loss function，來求 regression 的 data sample weight 。</p>
+</blockquote>
+<p>Regression 的 loss function 通常是 square error ， $l(y_i, \hat{y_i}) = \cfrac{1}{2}(y_i - \hat{y_i})^2$  </p>
+<p>我們已知 square error 的 $h_i = \cfrac{d}{d \ \hat{y}_i} -(y_i - \hat{y_i}) = 1$</p>
+<p>所以事實上，loss function 為 square error 的 regression 所有 data sample weight 都是 1</p>
+<h3 id="Classification-下-data-sample-weight"><a href="#Classification-下-data-sample-weight" class="headerlink" title="Classification 下 data sample weight"></a>Classification 下 data sample weight</h3><p>classification 在 cross entropy/logit loss 作為 loss function 時，second derivative of the loss function $h_i$:</p>
+<script type="math/tex; mode=display">h_i = \cfrac{d^2}{d (F_{m-1}(x_i))^2}l(y_i, F_{m-1}(x_i) = p_i \times (1-p_i)</script><ul>
+<li>previous probability $p_i$ 表 data sample $x_i$ 在  $F_{m-1}(x_i)$ 輸出的  probability</li>
+</ul>
+<p>classification 的 sample weight 是個開口向下的拋物線，兩側越往 $p_i=0.5$ 靠近 sample weight 越大。這很好理解，當 classifier 預測出的 probability 為 0.5 時，對這筆 data sample 是 low confidence 的，所以得加大其 weight 凸顯他。</p>
+<p><img src="https://i.imgur.com/JBZxzNm.png" style="zoom:33%;" /></p>
+<h1 id="Sparsity-Aware-Split-Finding"><a href="#Sparsity-Aware-Split-Finding" class="headerlink" title="Sparsity-Aware Split Finding"></a>Sparsity-Aware Split Finding</h1><p>XGBoost  有兩種 missing values (NAs) 處理機制，一種是最簡單的，直接指定 leaf node 方向，EX: missing value 直接放到  leaf node 。</p>
+<p>另一種是 learning from data，訓練時對於特徵中的 missing values (NAs)，在分裂計算 gain 時處理。</p>
+<p>XGBoost  會分別考慮將 missing values  放到 left leaf node and right leaf node 的情形下計算 $\text{Gain}_{Left}, \text{Gain}_{Right}$</p>
+<p>選擇能讓 gain 最大的那一側做為 missing values 所在 leaf node ，在 inference 階段遇到此特徵的 missing value 時將之歸入</p>
+<p>EX：</p>
+<p>假設我們有數筆  complete data 和兩筆含有 missing  values 的 data</p>
+<p><img src="https://i.imgur.com/3w2Lstm.png" style="zoom:50%;" /></p>
+<p><img src="https://i.imgur.com/0OVDOLf.png" style="zoom:50%;" /></p>
+<p> 分別計算 $Gain_{Left}$ and $Gain_{Right}$ 後選擇 $\max(\text{Gain}_{Left}, \text{Gain}_{Right})$  最大的那邊作為 missing values (NAs) 的歸屬 leaf node</p>
+<p><img src="https://i.imgur.com/KdIWcV6.png" style="zoom: 67%;" /></p>
+<h1 id="System-Design"><a href="#System-Design" class="headerlink" title="System Design"></a>System Design</h1><p>XGBoost 一系列 System 上的 optimization 都是圍繞著 Memory Block 展開的</p>
+<h2 id="Column-Block-for-Parallel-Learning"><a href="#Column-Block-for-Parallel-Learning" class="headerlink" title="Column Block for Parallel Learning"></a>Column Block for Parallel Learning</h2><p>block 是個連續的 memory 區塊，XGBoost 將 data sample 以 CSC (Compressed Sparse Column) format 存進 block 中，這麼做的好處是</p>
+<ol>
+<li>XGBoost  的 input 常常為大規模的 sparse data samples，使用 CSC 可以以 column 為 index 僅存放非 0 元素，有效減少 data sample size in memory 。</li>
+<li>CSC  因為是 columns index ，所以在 training tree  時，能快速定位到確切的 column</li>
+<li>在建 XGB tree  $f_m(x)$  時須依據不同 column (X feature column) 的 feature value sorting data，才能 split data ，有了 block 之後，只需一開始對全局所有 columns 的 feature value sorting 一次，即可在之後建任何 XGB tree  $f_m(x)$ 時使用</li>
+</ol>
+<p><img src="https://i.imgur.com/DsVlh0v.png" alt=""></p>
+<p>在 exact greedy algorithm，全局只有一個 block 計算 split;  在 approximate algorithms 中，因爲 data samples size 過大導致一運算單元容不下，所以 data samples 會根據 rows 切分成多個 blocks 分散到多個運算單元。</p>
+<p>也因為根據 row 切分成不同 blocks，所以在 multi blocks 之上運算的 Weighted Quantile Sketch 也能 parallel for split finding</p>
+<h3 id="Time-Complexity-of-Split-Finding"><a href="#Time-Complexity-of-Split-Finding" class="headerlink" title="Time Complexity of Split Finding"></a>Time Complexity of Split Finding</h3><p>若不事先對 block 內的 columns sorting，則整體 time complexity 為</p>
+<script type="math/tex; mode=display">O(Kd \| \text{x}\|_0 \log n)</script><ul>
+<li>$K$ it total tree in XGBoost</li>
+<li>$d$  is the maximum depth of the tree</li>
+<li>$| \text{x}|_0$  number of non-missing entries</li>
+<li>$| \text{x}|_0 \log n$ related to sorting algorithm ，每一棵樹的每一層都要 sorting  一次的意思</li>
+</ul>
+<p>若事先對 block  columns sorting 則  Exact greedy algorithm time complexity 為</p>
+<script type="math/tex; mode=display">O(Kd \|\text{x}\|_0 + \|\text{x}\|_0 \log n)</script><ul>
+<li>$O(| \text{x}|_0 \log n)$ 為事先 sorting</li>
+<li>$O(Kd |\text{x}|_0 )$ 為建 K 個 tree</li>
+</ul>
+<p>Approximate algorithm 的 time complexity 為</p>
+<script type="math/tex; mode=display">O(Kd \|\text{x}\|_0  + \|\text{x}\|_0 \log B)</script><ul>
+<li>單建一顆 tree 的 complexity 為 $| \text{x} |_0 \log q$，$q$ is the number of proposal split candidates in dataset</li>
+<li>$B$ is the maximum number of rows in each block。因爲 parallel computing 所以 $O$ 只記入最耗時的那個 block</li>
+</ul>
+<p>綜合以上，事先對 block 內的 columns sorting 加上 approximate algorithm 的 proposal candidate split，可以大幅降低 time complexity。</p>
+<h2 id="Cache-Aware-Access"><a href="#Cache-Aware-Access" class="headerlink" title="Cache-Aware Access"></a>Cache-Aware Access</h2><p>使用 memory block structure 對 columns sorting，對於 split finding 能有效降低 time complexity，但同時會造成 CPU cache $g_i$ $h_i$ 時的 cache miss rate 上升。</p>
+<ul>
+<li>$g_i$ first derivative of loss function</li>
+<li>$h_i$ second derivative of loss function</li>
+</ul>
+<p>$g_i \ h_i$的計算跟當前 $x_i$ 的 loss 有關，所以當 split finding  由小到大取時，$g_i \ h_i$ 在 memory 中實際上是無序的存放的，得透過 pointer 對應之，CPU 要 cache 時，不容易 copy 需要的 $g_i \ h_i$ 到 cache，造成 cache missing </p>
+<p><img src="https://i.imgur.com/ZeMRcEw.png" alt=""></p>
+<p>在 exact greedy algorithm，使用 cache-aware prefetching  algorithm，使用另一個</p>
+<p>thread 提前 access (prefetch) $g_i \ h_i$ 到  memory buffer 中讓 CPU cache 住。當 training thread  要提取時，直接就可以從 cache 拿，就算沒 cache 住，在  memory 中也是連續空間。</p>
+<p>在 multi block 下的 approximate greedy algorithm 得對 each block size  合理設置，也就是 each block 下的 row number (data sample 數) 有關。</p>
+<p>a block size 過大 cache 會裝不下，造成 cache missing ;  a block size 過小會使 total block number 過多，使的 parallel 運算沒效率，是個 trade-off 的參數。</p>
+<p>經過實驗，block  size  $2^{16}$ 是個相對合適的設置。</p>
+<p><img src="https://i.imgur.com/00pPuhe.png" style="zoom:67%;" /></p>
+<h2 id="Blocks-for-out-of-core-Computation"><a href="#Blocks-for-out-of-core-Computation" class="headerlink" title="Blocks for out-of-core Computation"></a>Blocks for out-of-core Computation</h2><p>當 data samples 大到所有的計算單元的 memory 也無法容納時，XGBoost 會使用 out-of-core。我們知道 XGBoost  以 block 為單位切分 data sample，無法被 memory 裝下的 blocks 會被成塊且連續的存入 hard disk。</p>
+<p>計算時也會開一條 thread 去 hard disk pre-fetch blocks into memory，這樣 XGBoost 就不會消耗過多時間再 I/O 上，可以一邊訓練一邊讀取 block。</p>
+<h3 id="Block-Compression"><a href="#Block-Compression" class="headerlink" title="Block Compression"></a>Block Compression</h3><p>存放在 hard disks 上的 out-of-core blocks 會被壓縮，減少讀取 I/O 的耗時。</p>
+<p>壓縮方式大致上為保留 column index，對 row index 進行壓縮，只保留  beginning index of row in block，然後 利用一個 16bit 的 integer 儲存 row index 的 offset，類似 C 裡面的  pointer 跟 array 的關係。</p>
+<h3 id="Block-Sharding"><a href="#Block-Sharding" class="headerlink" title="Block Sharding"></a>Block Sharding</h3><p>當有多個 hard disks 可供存放時，會將 data 劃分到多個 hard disks 上，好處是 pre-fetch thread 就可以同時讀取多個 hard disks 提高 I/O throughput 。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 13-17-Augu, 785–794. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a></li>
+<li>Why XGBoost Is So Effective? <a target="_blank" rel="noopener" href="https://towardsdatascience.com/why-xgboost-is-so-effective-3a193951e289">https://towardsdatascience.com/why-xgboost-is-so-effective-3a193951e289</a></li>
+<li><p>Weighted Quantile Sketch</p>
+<ul>
+<li>ε-approximate quantiles <a target="_blank" rel="noopener" href="http://www.mathcs.emory.edu/~cheung/Courses/584/Syllabus/08-Quantile/Greenwald.html">http://www.mathcs.emory.edu/~cheung/Courses/584/Syllabus/08-Quantile/Greenwald.html</a></li>
+<li>xgboost之分位点算法 <a target="_blank" rel="noopener" href="https://datavalley.github.io/2017/09/11/xgboost%E6%BA%90%E7%A0%81%E4%B9%8B%E5%88%86%E4%BD%8D%E7%82%B9">https://datavalley.github.io/2017/09/11/xgboost源码之分位点</a></li>
+<li>XGBoost解读(2)—近似分割算法 <a target="_blank" rel="noopener" href="https://yxzf.github.io/2017/04/xgboost-v2/">https://yxzf.github.io/2017/04/xgboost-v2</a></li>
+<li>Need help understanding xgboost’s approximate split points proposal <a target="_blank" rel="noopener" href="https://datascience.stackexchange.com/questions/10997/need-help-understanding-xgboosts-approximate-split-points-proposal">https://datascience.stackexchange.com/questions/10997/need-help-understanding-xgboosts-approximate-split-points-proposal</a></li>
+<li>Regression prediction intervals with XGBoost <a target="_blank" rel="noopener" href="https://towardsdatascience.com/regression-prediction-intervals-with-xgboost-428e0a018b">https://towardsdatascience.com/regression-prediction-intervals-with-xgboost-428e0a018b</a></li>
+</ul>
+</li>
+<li><p>block</p>
+<ul>
+<li>blocks-for-out-of-core-computation <a target="_blank" rel="noopener" href="https://www.hrwhisper.me/machine-learning-xgboost/#blocks-for-out-of-core-computation">https://www.hrwhisper.me/machine-learning-xgboost/#blocks-for-out-of-core-computation</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=oRrKeUCEbq8&amp;t=0s">XGBoost Part 4 (of 4): Crazy Cool Optimizations</a></li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>透視 XGBoost(4) 神奇 optimization 在哪裡？</p><p><a href="https://seed9d.github.io/XGBoost-cool-optimization/">https://seed9d.github.io/XGBoost-cool-optimization/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>seed9D</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-02-17</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-02-17</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/what-make-XGBoost-so-effective/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">透視 XGBoost(0) 總結篇</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/XGBoost-General-Objective-Function/"><span class="level-item">透視 XGBoost(3) 蘋果樹下的 objective function</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "329a8b4c017e4dcbff8fa20be6bbec25",
+            repo: "seed9D.github.io",
+            owner: "seed9D",
+            clientID: "eb1cbacea1411b9a4729",
+            clientSecret: "13dcde9fed4b916ec81748c4c29e8047dc4861e7",
+            admin: ["seed9D"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Approximate-Greedy-Algorithm"><span class="level-left"><span class="level-item">Approximate Greedy Algorithm</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#怎麼找-Candidate-Splits"><span class="level-left"><span class="level-item">怎麼找 Candidate Splits ?</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#phi-Quantiles-計算"><span class="level-left"><span class="level-item">$\phi$ - Quantiles 計算</span></span></a></li><li><a class="level is-mobile" href="#epsilon-text-approximate-phi-text-quantiles"><span class="level-left"><span class="level-item">$\epsilon \text{-approximate} \ \phi  \text{-quantiles}$</span></span></a></li><li><a class="level is-mobile" href="#ε-Approximate-Quantile-Summary"><span class="level-left"><span class="level-item">ε-Approximate Quantile Summary</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#"><span class="level-left"><span class="level-item"> </span></span></a></li><li><a class="level is-mobile" href="#Weighted-Quantile-Sketch-amp-Parallel-Learning"><span class="level-left"><span class="level-item">Weighted Quantile Sketch &amp; Parallel Learning</span></span></a><ul class="menu-list"><ul class="menu-list"><li><a class="level is-mobile" href="#Parallel-Learning-下的-quantiles"><span class="level-left"><span class="level-item">Parallel Learning 下的  quantiles</span></span></a></li></ul><li><a class="level is-mobile" href="#什麼是-Weighted-Quantile-Sketch"><span class="level-left"><span class="level-item">什麼是 Weighted Quantile Sketch?</span></span></a></li><li><a class="level is-mobile" href="#為什麼需要-Weighted-Quantile-Sketch？"><span class="level-left"><span class="level-item">為什麼需要 Weighted Quantile Sketch？</span></span></a></li><li><a class="level is-mobile" href="#那每筆-data-的-weight-怎麼來的？"><span class="level-left"><span class="level-item">那每筆 data 的 weight 怎麼來的？</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Regression-下-data-sample-weight"><span class="level-left"><span class="level-item">Regression 下 data sample weight</span></span></a></li><li><a class="level is-mobile" href="#Classification-下-data-sample-weight"><span class="level-left"><span class="level-item">Classification 下 data sample weight</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Sparsity-Aware-Split-Finding"><span class="level-left"><span class="level-item">Sparsity-Aware Split Finding</span></span></a></li><li><a class="level is-mobile" href="#System-Design"><span class="level-left"><span class="level-item">System Design</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Column-Block-for-Parallel-Learning"><span class="level-left"><span class="level-item">Column Block for Parallel Learning</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Time-Complexity-of-Split-Finding"><span class="level-left"><span class="level-item">Time Complexity of Split Finding</span></span></a></li></ul></li><li><a class="level is-mobile" href="#Cache-Aware-Access"><span class="level-left"><span class="level-item">Cache-Aware Access</span></span></a></li><li><a class="level is-mobile" href="#Blocks-for-out-of-core-Computation"><span class="level-left"><span class="level-item">Blocks for out-of-core Computation</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#Block-Compression"><span class="level-left"><span class="level-item">Block Compression</span></span></a></li><li><a class="level is-mobile" href="#Block-Sharding"><span class="level-left"><span class="level-item">Block Sharding</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#Reference"><span class="level-left"><span class="level-item">Reference</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-17T15:20:35.000Z">2021-02-17</time></p><p class="title"><a href="/what-make-XGBoost-so-effective/">透視 XGBoost(0) 總結篇</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-17T02:00:16.000Z">2021-02-17</time></p><p class="title"><a href="/XGBoost-cool-optimization/">透視 XGBoost(4) 神奇 optimization 在哪裡？</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T16:17:27.000Z">2021-02-17</time></p><p class="title"><a href="/XGBoost-General-Objective-Function/">透視 XGBoost(3) 蘋果樹下的 objective function</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T15:48:04.000Z">2021-02-16</time></p><p class="title"><a href="/XGBoost-for-classification/">透視 XGBoost(2) 圖解 Classification</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-02-16T15:32:16.000Z">2021-02-16</time></p><p class="title"><a href="/xgboost-for-regression/">透視 XGBoost(1) 圖解 Regression</a></p></div></article></div></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/images/GG.jpg" alt="seed9D"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">seed9D</p><p class="is-size-6 is-block">這一生志願平凡快樂</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>左岸</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">19</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">6</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/seed9D" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/seed9D"><i class="fab fa-github"></i></a></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/images/logo.svg" alt="seed9D&#039;s blog" height="28"></a><p class="is-size-7"><span>&copy; 2021 seed9D</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener external nofollow">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener external nofollow">Icarus</a><br><span id="busuanzi_container_site_uv">Visited by <span id="busuanzi_value_site_uv">0</span> users</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

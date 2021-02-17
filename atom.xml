@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-10T15:53:06.000Z</updated>
+  <updated>2021-02-17T15:29:33.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -15,6 +15,123 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>透視 XGBoost(0) 總結篇</title>
+    <link href="https://seed9d.github.io/what-make-XGBoost-so-effective/"/>
+    <id>https://seed9d.github.io/what-make-XGBoost-so-effective/</id>
+    <published>2021-02-17T15:20:35.000Z</published>
+    <updated>2021-02-17T15:29:33.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;此篇總結 透視 XGBoost 系列，建議系列閱讀順序為&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;/xgboost-for-regression/&quot; title=&quot;透視 XGBoost(1) 圖解 Regression&quot;&gt;透視 XGBoost(1) 圖解 Regression&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/XGBoost-for-classification/&quot; title=&quot;透視 XGBoost(2) 圖解 Classification&quot;&gt;透視 XGBoost(2) 圖解 Classification&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/XGBoost-General-Objective-Function/&quot; title=&quot;透視 XGBoost(3) 蘋果樹下的 objective function&quot;&gt;透視 XGBoost(3) 蘋果樹下的 objective function&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/XGBoost-cool-optimization/&quot; title=&quot;透視 XGBoost(4) 神奇 optimization 在哪裡？&quot;&gt;透視 XGBoost(4) 神奇 optimization 在哪裡？&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>透視 XGBoost(4) 神奇 optimization 在哪裡？</title>
+    <link href="https://seed9d.github.io/XGBoost-cool-optimization/"/>
+    <id>https://seed9d.github.io/XGBoost-cool-optimization/</id>
+    <published>2021-02-17T02:00:16.000Z</published>
+    <updated>2021-02-17T15:30:38.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;XGBoost 不只在算法上的改造，真正讓 XGBoost  大放異彩的是與工程優化的結合，這讓 XGBoost 在工業上可以應用於大規模數據的處理。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Approximate Greedy Algorithm&lt;/li&gt;
+&lt;li&gt;Weighted Quantile Sketch &amp;amp; Parallel Learning&lt;/li&gt;
+&lt;li&gt;Sparsity-Aware Split Finding&lt;/li&gt;
+&lt;li&gt;System Design&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Approximate-Greedy-Algorithm&quot;&gt;&lt;a href=&quot;#Approximate-Greedy-Algorithm&quot; class=&quot;headerlink&quot; title=&quot;Approximate Greedy Algorithm&quot;&gt;&lt;/a&gt;Approximate Greedy Algorithm&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;XGBoost 有兩種 split finding  策略，Exact Greedy and Approximate Greedy&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;data sample 量小的情況下， XGB tree 在建立分支時，會逐一掃過每個可能分裂點 (已對特徵值排序) 計算 similarity score  跟 gain， 即是 greedy  algorithm。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/UKj8mpu.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;greedy algorithm 會窮舉所有可能分裂點，因此能達到最準確的結果，因為他把所有可能的結果都看過一遍後選了一個最佳的。&lt;/p&gt;
+&lt;p&gt;但如果 data sample  不僅數量多 (row)，特徵維度也多 (columns)，採用 greedy algorithm，雖然準確卻也沒效率。&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>透視 XGBoost(3) 蘋果樹下的 objective function</title>
+    <link href="https://seed9d.github.io/XGBoost-General-Objective-Function/"/>
+    <id>https://seed9d.github.io/XGBoost-General-Objective-Function/</id>
+    <published>2021-02-16T16:17:27.000Z</published>
+    <updated>2021-02-17T15:50:14.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;XGBoost-General-Objective-Function&quot;&gt;&lt;a href=&quot;#XGBoost-General-Objective-Function&quot; class=&quot;headerlink&quot; title=&quot;XGBoost General Objective Function&quot;&gt;&lt;/a&gt;XGBoost General Objective Function&lt;/h1&gt;&lt;p&gt;XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{aligned}
+F_m(x) &amp; = F_{m-1}(x) + f_m(x)  
+\\
+F_{m-1}(x) &amp;= F_0(x) + \sum_{i=0}^{m-1}f_{m-1}(x)
+\end{aligned}&lt;/script&gt;&lt;p&gt;不同的是， XGBoost 用一種比較聰明且精準的方式去擬合 residual 建立專屬 XGBoost 的蘋果樹 $f_m(x)$&lt;/p&gt;
+&lt;p&gt;此篇首先推導了 XGBoost 的通用 Objective Function，然後解釋為何 second order Taylor expansion 可以讓 XGBoost 收斂更快更準確&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>透視 XGBoost(2) 圖解 Classification</title>
+    <link href="https://seed9d.github.io/XGBoost-for-classification/"/>
+    <id>https://seed9d.github.io/XGBoost-for-classification/</id>
+    <published>2021-02-16T15:48:04.000Z</published>
+    <updated>2021-02-17T15:52:44.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;TL;DR&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;XGBoost 與  GBDT 相比，同樣都是擬合上一步 $F_{m-1}(x)$ 預測值的 residual 。不同的是 XGBoost 在擬合 residual 時更為聰明有效，他有自己衡量分裂增益 gain 的方式去擬合  residual 建立  XGB tree $f_m(x)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Gain = Left_{\text{similarity}} + Right_{\text{similarity}}  - Root_{\text{similarity}} \tag{1}&lt;/script&gt;&lt;ul&gt;
+&lt;li&gt;分裂增益 gain ，的背後原理可以透過 XGBoost  通用 objective function 並填入 classification/regression/rank/etc.. 各自的 loss function  後推導出的 $\text{first derivative of loss function} = g_i \quad \text{and} \quad \text{second derivative of loss function} = h_i$&lt;/li&gt;
+&lt;li&gt;XGBoost 的 通用 objective function 由兩部份組成&lt;ul&gt;
+&lt;li&gt;first part is loss function，根據不同任務有不同的 loss function &lt;/li&gt;
+&lt;li&gt;second part is regularization term 防止 overfitting，限制 leaf node 輸出值大小 和 leaf nodes 的總數&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>透視 XGBoost(1) 圖解 Regression</title>
+    <link href="https://seed9d.github.io/xgboost-for-regression/"/>
+    <id>https://seed9d.github.io/xgboost-for-regression/</id>
+    <published>2021-02-16T15:32:16.000Z</published>
+    <updated>2021-02-17T15:48:40.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Introduction&quot;&gt;&lt;a href=&quot;#Introduction&quot; class=&quot;headerlink&quot; title=&quot;Introduction&quot;&gt;&lt;/a&gt;Introduction&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/aaIKrZN.png&quot; alt=&quot;XGBoost&quot;&gt;&lt;/p&gt;
+&lt;p&gt;XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$&lt;/p&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{aligned}
+F_m(x) &amp; = F_{m-1}(x) + f_m(x)  
+\\
+F_{m-1}(x) &amp;= F_0(x) + \sum_{i=0}^{m-1}f_{m-1}(x)
+\end{aligned}&lt;/script&gt;&lt;p&gt;不同的是，Xgboost 做了大量運算和擬合的優化，這讓他比起傳統 GBDT 更為高效率與有效&lt;/p&gt;</summary>
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>內容推薦 (3):主題卡片推薦</title>
@@ -361,8 +478,8 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
   
   <entry>
     <title>Hello World</title>
-    <link href="https://seed9d.github.io/ckkyy83g1000foje2454l7b5j/"/>
-    <id>https://seed9d.github.io/ckkyy83g1000foje2454l7b5j/</id>
+    <link href="https://seed9d.github.io/ckl9m8kqg000gd5e2fynz6bs1/"/>
+    <id>https://seed9d.github.io/ckl9m8kqg000gd5e2fynz6bs1/</id>
     <published>2021-01-17T15:54:25.000Z</published>
     <updated>2021-01-18T10:06:40.000Z</updated>
     
