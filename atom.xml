@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-19T05:16:55.000Z</updated>
+  <updated>2021-02-19T16:06:09.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -17,11 +17,51 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>實時推薦策略流程</title>
+    <link href="https://seed9d.github.io/realtime-recommendataion-system-architecture/"/>
+    <id>https://seed9d.github.io/realtime-recommendataion-system-architecture/</id>
+    <published>2021-02-19T15:52:12.000Z</published>
+    <updated>2021-02-19T16:06:09.000Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;一個完整的工業級的推薦系統會分成兩大部分&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Online serving&lt;/li&gt;
+&lt;li&gt;Offline data processing&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;此篇著重在電商推薦系統在 online serving 的算法策略架構&lt;/strong&gt;&lt;/p&gt;
+&lt;h1 id=&quot;架構概述&quot;&gt;&lt;a href=&quot;#架構概述&quot; class=&quot;headerlink&quot; title=&quot;架構概述&quot;&gt;&lt;/a&gt;架構概述&lt;/h1&gt;&lt;p&gt;Online serving 為當 user request 進來時算法的策略流程，什麼階段該做什麼事。一般來說 online serving 又可大致上分成三個 stages&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Match： 從百萬級的商品庫中召回數千或數百的商品 &lt;ul&gt;
+&lt;li&gt;此階段大致上, 模糊地召回 user 感興趣的商品&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Rank：對召回的數千或數百商品進行打分，決定針對 user 個性化排序召回的商品&lt;ul&gt;
+&lt;li&gt;通常會用模型 ranking，模型會綜合考慮 user 的喜好以及商品本身的特徵進行打分&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Re rank：根據業務邏輯重新排序 ranking 結果&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/xn0ymDY.png&quot; style=&quot;zoom:50%;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;上面三個 stages 是一個推薦流程的抽象表示，實際上每個 stage 內還會細分出工程和業務考量的模組。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/categories/recommendation-system/"/>
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/tags/recommendation-system/"/>
+    
+    <category term="推薦系統" scheme="https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/"/>
+    
+  </entry>
+  
+  <entry>
     <title>推薦系統中的瑞士刀 Factorization Machine</title>
     <link href="https://seed9d.github.io/pratical-FM-model/"/>
     <id>https://seed9d.github.io/pratical-FM-model/</id>
     <published>2021-02-18T16:00:42.000Z</published>
-    <updated>2021-02-19T05:16:55.000Z</updated>
+    <updated>2021-02-19T16:00:43.000Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;多才多藝的-Factorization-Machine&quot;&gt;&lt;a href=&quot;#多才多藝的-Factorization-Machine&quot; class=&quot;headerlink&quot; title=&quot;多才多藝的 Factorization Machine&quot;&gt;&lt;/a&gt;多才多藝的 Factorization Machine&lt;/h1&gt;&lt;p&gt;在推薦領域，現今各種 DNN 模型當道，有個不怎麼深的模型卻小巧而美，既能做召回又能做排序，計算複雜度上又沒 DNN 耗時又耗錢&lt;/p&gt;
@@ -519,21 +559,6 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
     
     
     <category term="ML" scheme="https://seed9d.github.io/tags/ML/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://seed9d.github.io/cklbuf1gv000gc7e2crkx3j0q/"/>
-    <id>https://seed9d.github.io/cklbuf1gv000gc7e2crkx3j0q/</id>
-    <published>2021-01-17T15:54:25.000Z</published>
-    <updated>2021-01-18T10:06:40.000Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt; for more info. If you get any problems when using Hexo, you can find the answer in &lt;a href=&quot;https://hexo.io/docs/troubleshooting.html&quot;&gt;troubleshooting&lt;/a&gt; or you can ask me on &lt;a href=&quot;https://github.com/hexojs/hexo/issues&quot;&gt;GitHub&lt;/a&gt;.&lt;br&gt;</summary>
-    
-    
-    
     
   </entry>
   
