@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://seed9d.github.io/wide-deep-in-recommendation/</loc>
+    
+    <lastmod>2021-02-20</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://seed9d.github.io/realtime-recommendataion-system-architecture/</loc>
     
     <lastmod>2021-02-19</lastmod>
@@ -170,7 +177,7 @@
   </url>
   
   <url>
-    <loc>https://seed9d.github.io/cklchtaxp000g7le2360zb4wk/</loc>
+    <loc>https://seed9d.github.io/ckldwg4yu000g3qe25brzdppt/</loc>
     
     <lastmod>2021-01-18</lastmod>
     
@@ -186,7 +193,7 @@
 
   <url>
     <loc>https://seed9d.github.io/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -194,42 +201,56 @@
   
   <url>
     <loc>https://seed9d.github.io/tags/ML/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/recommendation-system/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/NLP/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/word-embedding/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/pytorch/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/tags/deep-learning/</loc>
+    <lastmod>2021-02-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://seed9d.github.io/tags/ranking/</loc>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -238,21 +259,21 @@
   
   <url>
     <loc>https://seed9d.github.io/categories/Machine-Learning/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/recommendation-system/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://seed9d.github.io/categories/NLP/</loc>
-    <lastmod>2021-02-19</lastmod>
+    <lastmod>2021-02-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

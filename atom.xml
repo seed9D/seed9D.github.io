@@ -6,7 +6,7 @@
   <link href="https://seed9d.github.io/atom.xml" rel="self"/>
   
   <link href="https://seed9d.github.io/"/>
-  <updated>2021-02-19T16:13:03.000Z</updated>
+  <updated>2021-02-20T15:49:28.000Z</updated>
   <id>https://seed9d.github.io/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>實作 wide &amp; deep 從訓練到推薦排序</title>
+    <link href="https://seed9d.github.io/wide-deep-in-recommendation/"/>
+    <id>https://seed9d.github.io/wide-deep-in-recommendation/</id>
+    <published>2021-02-20T15:29:06.000Z</published>
+    <updated>2021-02-20T15:49:28.000Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Memorization-amp-Generalization&quot;&gt;&lt;a href=&quot;#Memorization-amp-Generalization&quot; class=&quot;headerlink&quot; title=&quot;Memorization &amp;amp; Generalization&quot;&gt;&lt;/a&gt;Memorization &amp;amp; Generalization&lt;/h1&gt;&lt;p&gt;在推薦系統中，如果要選第一個深度排序模型從傳統機器學習接軌到 DNN，那首推 google 在 2016 年提出的  Wide &amp;amp; Deep ，Wide &amp;amp; Deep 名稱來自其由一個 shallow 的 model 與一個 deep  的  network 組合而成。&lt;/p&gt;
+&lt;p&gt;在進入到 DNN 前，我們手上肯定有個正在線上運行的傳統排序模型 ex: FM, GBDT …，還有積累了很久的有效特徵組合，如果直接進入 DNN，這些經驗和積累打水漂不說，還得花很長的時間 tune 模型。&lt;/p&gt;
+&lt;p&gt;有了 Wide &amp;amp; Deep，我們只需將正在 serving 的那個排序模型放在 wide side 使用，特徵照舊使用; 另外在建一個  deep side 的深度模型，兩個模型 joint training  即可無縫接軌到 DNN。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/ZlRSMGf.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;那 wide 跟  deep network 分別代表什麼呢 ？&lt;/p&gt;
+&lt;p&gt;Google 在 2016 的論文中總結出：Wide 負責 memorization , Deep 負責 Generalization , Wide &amp;amp; Deep 是 Memorization &amp;amp; Generalization 的體現，實際上也是推薦領域中經典的 Exploitation &amp;amp; Exploration  問題。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/categories/recommendation-system/"/>
+    
+    
+    <category term="recommendation system" scheme="https://seed9d.github.io/tags/recommendation-system/"/>
+    
+    <category term="pytorch" scheme="https://seed9d.github.io/tags/pytorch/"/>
+    
+    <category term="推薦系統" scheme="https://seed9d.github.io/tags/%E6%8E%A8%E8%96%A6%E7%B3%BB%E7%B5%B1/"/>
+    
+    <category term="deep learning" scheme="https://seed9d.github.io/tags/deep-learning/"/>
+    
+    <category term="ranking" scheme="https://seed9d.github.io/tags/ranking/"/>
+    
+  </entry>
   
   <entry>
     <title>實時推薦策略流程</title>
@@ -521,37 +553,6 @@ p(w_1 , \cdots , w_T) = \prod\limits_i p(w_i \: | \: w_{i-1} , \cdots , w_1)&lt;
 &lt;/ul&gt;
 &lt;p&gt;GBDT 簡介在 &lt;a href=&quot;https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/#GBDT-%E7%B0%A1%E4%BB%8B&quot;&gt;一步步透視 GBDT Regression Tree&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;直接進入正題吧&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Machine Learning" scheme="https://seed9d.github.io/categories/Machine-Learning/"/>
-    
-    
-    <category term="ML" scheme="https://seed9d.github.io/tags/ML/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一步步透視 GBDT Regression Tree</title>
-    <link href="https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/"/>
-    <id>https://seed9d.github.io/GBDT-Rregression-Tree-Step-by-Step/</id>
-    <published>2021-01-18T05:40:03.000Z</published>
-    <updated>2021-01-25T15:48:21.000Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;TL-DR&quot;&gt;&lt;a href=&quot;#TL-DR&quot; class=&quot;headerlink&quot; title=&quot;TL;DR&quot;&gt;&lt;/a&gt;TL;DR&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;訓練完的 GBDT 是由多棵樹組成的 function set $f_1(x), …,f_{M}(x)$&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;$F_M(x) = F_0(x) + \nu\sum^M_{i=1}f_i(x) $&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;訓練中的 GBDT，每棵新樹  $f_m(x)$ 都去擬合  target $y$ 與 $F_{m-1}(x)$ 的 $residual$，也就是 $\textit{gradient  decent}$  的方向 &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;$F_m(x) = F_{m-1}(x) + \nu f_m(x)$&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2021/01/23/ZWgsyMOw5LoQxFz.png&quot; alt=&quot;Golf Boosting&quot;&gt;&lt;/p&gt;</summary>
     
     
     
