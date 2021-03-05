@@ -51,13 +51,176 @@
 <p>data sample 量小的情況下， XGB tree 在建立分支時，會逐一掃過每個可能分裂點 (已對特徵值排序) 計算 similarity score  跟 gain， 即是 greedy  algorithm。</p>
 <p><img src="https://i.imgur.com/UKj8mpu.png" alt=""></p>
 <p>greedy algorithm 會窮舉所有可能分裂點，因此能達到最準確的結果，因為他把所有可能的結果都看過一遍後選了一個最佳的。</p>
-<p>但如果 data sample  不僅數量多 (row)，特徵維度也多 (columns)，採用 greedy algorithm，雖然準確卻也沒效率。</p></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ML/">ML </a></div><a class="article-more button is-small is-size-7" href="/XGBoost-cool-optimization/#more"><i class="fas fa-book-reader has-text-grey"></i>  Read more</a></div></article></div><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><a class="has-link-black-ter" href="/XGBoost-General-Objective-Function/"><i class="fas fa-angle-double-right"></i>透視 XGBoost(3) 蘋果樹下的 objective function</a></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-17</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-18</time></span><span class="level-item"><a class="link-muted" href="/categories/Machine-Learning/">Machine Learning</a></span><span class="level-item">16 minutes read (About 2360 words)</span></div></div><div class="content"><h1 id="XGBoost-General-Objective-Function"><a href="#XGBoost-General-Objective-Function" class="headerlink" title="XGBoost General Objective Function"></a>XGBoost General Objective Function</h1><p>XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$</p>
+<p>但如果 data sample  不僅數量多 (row)，特徵維度也多 (columns)，採用 greedy algorithm，雖然準確卻也沒效率。</p></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ML/">ML </a></div><a class="article-more button is-small is-size-7" href="/XGBoost-cool-optimization/#more"><i class="fas fa-book-reader has-text-grey"></i>  Read more</a></div></article></div><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><a class="has-link-black-ter" href="/XGBoost-General-Objective-Function/"><i class="fas fa-angle-double-right"></i>透視 XGBoost(3) 蘋果樹下的 objective function</a></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-17</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-03-05</time></span><span class="level-item"><a class="link-muted" href="/categories/Machine-Learning/">Machine Learning</a></span><span class="level-item">16 minutes read (About 2352 words)</span></div></div><div class="content"><h1 id="XGBoost-General-Objective-Function"><a href="#XGBoost-General-Objective-Function" class="headerlink" title="XGBoost General Objective Function"></a>XGBoost General Objective Function</h1><p>XGboost 是 gradient boosting machine 的一種實作方式，xgboost 也是建一顆新樹 $f_m(x)$ 去擬合上一步模型輸出 $F_{m-1}(x)$ 的 $\text{residual}$</p>
 <script type="math/tex; mode=display">\begin{aligned}
 F_m(x) & = F_{m-1}(x) + f_m(x)  
 \\
-F_{m-1}(x) &= F_0(x) + \sum_{i=0}^{m-1}f_{m-1}(x)
-\end{aligned}</script><p>不同的是， XGBoost 用一種比較聰明且精準的方式去擬合 residual 建立專屬 XGBoost 的蘋果樹 $f_m(x)$</p>
-<p>此篇首先推導了 XGBoost 的通用 Objective Function，然後解釋為何 second order Taylor expansion 可以讓 XGBoost 收斂更快更準確</p></div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ML/">ML </a></div><a class="article-more button is-small is-size-7" href="/XGBoost-General-Objective-Function/#more"><i class="fas fa-book-reader has-text-grey"></i>  Read more</a></div></article></div><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><a class="has-link-black-ter" href="/XGBoost-for-classification/"><i class="fas fa-angle-double-right"></i>透視 XGBoost(2) 圖解 Classification</a></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-18</time></span><span class="level-item"><a class="link-muted" href="/categories/Machine-Learning/">Machine Learning</a></span><span class="level-item">22 minutes read (About 3260 words)</span></div></div><div class="content"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><ul>
+F_{m-1}(x) &= F_0(x) + \sum_{i=1}^{m-1}f_{i}(x)
+\end{aligned}</script><p>不同的是， XGBoost 用一種比較聰明且精準的方式去擬合 residual 建立子樹 $f_m(x)$</p>
+<p>此篇首先推導了 XGBoost 的通用 Objective Function，然後解釋為何 second order Taylor expansion 可以讓 XGBoost 收斂更快更準確</p>
+<h1 id="XGBoost’s-Objective-Function"><a href="#XGBoost’s-Objective-Function" class="headerlink" title="XGBoost’s Objective Function"></a>XGBoost’s Objective Function</h1><p><strong>XGBoost</strong>  的 objective function 由 loss function term $l(y_i, \hat{y_i})$ 和 regularized term  $\Omega$ 組成</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{L}& = [\sum_i^n l(y_i, \hat{y_i}) ] + \sum_{m}\Omega({f_m}) 
+
+\end{aligned}</script><ul>
+<li>$\mathcal{L}$ 表 objective function</li>
+<li>$l(y_i, \hat{y_i})$ 表 loss function<ul>
+<li>in regression, loss function $l(y_i, \hat{y_i})$ commonly use square error</li>
+<li>in classification，最大化 log likelihood 就是最小化 cross entropy</li>
+</ul>
+</li>
+<li>$f_m$ 表 第 m 步 XGB tree</li>
+<li>regularized term  $\Omega$  跟 XGB tree $f_m(x)$ leaf node number $T_m$ 與 each leaf node output  $\gamma$  有關<ul>
+<li>$\Omega(f_m) = \tau T_m + \cfrac{1}{2}\lambda \lVert \gamma \rVert ^2$<ul>
+<li>$\lambda$  is a regularization parameter</li>
+<li>$T_m$ is the number of leaf in tree $f_m$</li>
+<li>$\tau$ 表對 $T_m$ 的 factor</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>在 第 $m-1$ 步建完 tree $f_{m-1}$時，total cost 為</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{L}^{(m-1)}& = [\sum_{i=1}^n l(y_i, \hat{y_i}^{(m-1)}) ] + \Omega({f_{(m-1)}}) \\
+
+&=[\sum_{i=1}^n l(y_i, F_{(m-1)}(x_i) ] + \Omega({f_{(m-1)}})
+
+\end{aligned} \tag{4}</script><ul>
+<li>$\hat{y_i}^{(m-1)}$ 表 $F_{m-1}(x_i)$ 預測值</li>
+<li>$f_{m-1}$ 表 第 $m-1$ 步建立的  XGB tree</li>
+</ul>
+<p>進入第 $m$ 步，我們建一顆新樹  $f_m(x)$ 進一步減少 total loss，使得 $\mathcal{L}^{(m)}&lt; \mathcal{L}^{(m-1)}$ ， 則 $m$ 步 cost function 為</p>
+<script type="math/tex; mode=display">\begin{aligned} 
+\mathcal{L}^{(m)}& = [\sum_i^n l(y_i, F_{m-1}(x_i) + f_m(x_i)) ] + \Omega({f_{(m)}})  < \mathcal{L}^{(m-1)} 
+\end{aligned} \tag{5}</script><p>現在要找出新樹 $f_m(x_i)$ 的每個 leaf node 輸出能使式 (5) $\mathcal{L}^{(m)}$ 最小</p>
+<script type="math/tex; mode=display">\gamma_{j,m} = argmin_\gamma \sum_{x_i \in R_{j,m}} [l(y_i, F_{m-1}(x_i) + \gamma)] + \Omega({f_{(m)}}) \tag{6}</script><ul>
+<li>$j$ 表 leaf node index</li>
+<li>$m$ 表第 $m$ 步</li>
+<li>$\gamma_{j,m}$ $m$ 步 $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+<li>$R_{jm}$ 表 $m$ 步 第 $j$ 個 leaf node，所包含的 data sample $x$ 集合</li>
+</ul>
+<p>當 loss function $l(y, \hat{y})$ 為 square error 時，求解式 (6) 不難，但如果是 classification problem 時，就變得很棘手。</p>
+<p>所以 GBDT 對 regression  problem  與 classification  problem 分別用了兩種不同方式求解極值，求出 leaf node 的輸出</p>
+<ul>
+<li>for regression ：硬解 derivative ，因爲 MSE 的 derivative 簡單 <a href="/GBDT-Rregression-Tree-Step-by-Step/" title="一步步透視 GBDT Regression Tree">一步步透視 GBDT Regression Tree</a></li>
+<li>for classification: use the <strong>Second Order Tayler Approximation</strong>  化簡 loss function <a href="/GBDT-Classifier-step-by-step/" title="一步步透視 GBDT Classifier">一步步透視 GBDT Classifier</a></li>
+</ul>
+<h2 id="Second-Order-Tayler-Approximation-的步步逼近"><a href="#Second-Order-Tayler-Approximation-的步步逼近" class="headerlink" title="Second Order Tayler Approximation 的步步逼近"></a><strong>Second Order Tayler Approximation 的步步逼近</strong></h2><p>XGBoost 直接以  <strong>Second Order Tayler Approximation</strong> 處理 classification  跟 regression 的 <strong>loss function part $l(y,\hat{y})$</strong></p>
+<p>式(5) 的 <strong>loss function part</strong>  在 $\hat{y}^{m-1}(x_i)$ 附近展開: </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+l(y,\hat{y}^{(m-1)} + f_m(x)) \approx & \quad
+l(y, \hat{y}^{(m-1)}) + [\cfrac{d}{d \ \hat{y}^{(m-1)}} \ l(y, \hat{y}^{(m-1)})]f_m(x) + \cfrac{1}{2}[\cfrac{d^2}{d \ (\hat{y}^{(m-1)})^2} \ l(y, \hat{y}^{(m-1)})] f_m(x)^2 \\
+
+& = l(y, F_{m-1}(x)) + [\cfrac{d}{d \ F_{m-1}} \ l(y, F_{m-1})]f_m(x) + \cfrac{1}{2}[\cfrac{d^2}{d \ F_{m-1}^2} l(y, F_{m-1})] f_m(x)^2  \\
+
+&= l(y, F_{m-1}(x)) + gf_m(x) + \cfrac{1}{2}hf_m(x)^2 
+
+\end{aligned}\tag{7}</script><ul>
+<li>$\hat{y}^{(m-1)}$ 為  XGB  在 $m-1$ 步的 prediction $F_{m-1}(x)$</li>
+<li>$g = \cfrac{d}{d \ F_{m-1}} \ l(y, F_{m-1})$</li>
+<li>$h = \cfrac{d^2}{d^2 \ F_{m-1}} l(y, F_{m-1})$</li>
+</ul>
+<p>將式 (7) 代入式(5)：</p>
+<script type="math/tex; mode=display">\begin{aligned} 
+\mathcal{L}^{(m)}& \approx \ [
+\sum_i^n(l(y_i, \hat{y}^{(m-1)}_i) +g_if_m(x_i) + \cfrac{1}{2}h_if_m(x_i)^2
+ ] + \Omega({f_{m}}) 
+\end{aligned} \tag{8}</script><ul>
+<li>$g_i$ 為 first derivative of loss function  related to data sample $x_i$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$</li>
+<li>$f_m(x_i)$ 為 $x_i$  在 XGB tree $f_m(x)$ 的 output value</li>
+</ul>
+<p>式 (8) 即 XGBoost  在 $m$  步的 cost function</p>
+<h2 id="mathcal-L-m-束手就擒"><a href="#mathcal-L-m-束手就擒" class="headerlink" title="$\mathcal{L}^{(m)}$ 束手就擒"></a>$\mathcal{L}^{(m)}$ 束手就擒</h2><p> <strong>Second Order Tayler Approximation 逼近 loss function $l(y, \hat{y})$後 ，</strong>對 $\mathcal{L}^{(m)}$ 求 $\gamma_{j,m}$ 極值，就變得容易多了</p>
+<p>先將 regularization term  $\Omega({f_{m}})$ 展開代入式 (8)，並拿掉之後對微分沒影響的常數項 $l(y_i, \hat{y}^{(m-1)}_i)$</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}& = [
+\sum_i^n( g_if_m(x_i) + \cfrac{1}{2}h_if_m(x_i)^2)
+ ] + [\tau T_m + \cfrac{1}{2}\lambda \sum^T_{j} \gamma_{m,j}^2]  \\
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m 
+
+\end{aligned} \tag{9}</script><ul>
+<li>$T_m$ is the number of leaf in tree $f_m$</li>
+<li>$\tau$ 表對 $T_m$ 的 factor</li>
+<li>$\gamma_{j,m}$ 表 $m$ 步 XGB tree $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+<li>$R_{m,j}$ 表 leaf node j 下的 data sample $x$ 集合</li>
+<li>第一個等式到第二個等式 : 從原本遍歷所有 data sample $x$ 到遍歷所有 leaf node $R_{m,j}$ 下的 data sample</li>
+</ul>
+<p>式 (9) 對 $\gamma_{j,m}$ 微分取極值</p>
+<script type="math/tex; mode=display">\cfrac{d}{d \ \gamma_{j, m}} \mathcal{\tilde{L}}^{(m)} = \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j} }g_i) + (\sum_{i \in R_{j,m}}h_i)\gamma_{j,m}] = 0 \tag{10}</script><p>對於已經固定結構了 tree $f_m(x)$，式 (10) leaf node $j$ 的 output value $\gamma_{j,m}$ 為</p>
+<script type="math/tex; mode=display">\gamma_{j,m}^*=- \cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda} \tag{11}</script><ul>
+<li>$g_i$ 為 first derivative of loss function  related to data sample $x_i$ :  $g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, F_{m-1}(x_i))$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$:  $h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, F_{m-1}(x_i))$</li>
+</ul>
+<p>將 式(11) $\gamma_{j,m}^*$ 代回 式 (9)，即 objective function 的極值</p>
+<script type="math/tex; mode=display">
+\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m  \\
+
+&=\sum^{T_m}_{j=1}[-(\sum_{i \in R_{j,m}}g_i)\cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda} 
++ \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)(\cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda})^2 ] + \tau T_m  \\
+
+& =  \sum^{T_m}_{j=1}[-\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} + \cfrac{1}{2} 
+\cfrac{(\sum g_i)^2}{\sum h_i + \lambda}] + \tau T_m  \\
+
+& = -\cfrac{1}{2} \sum^{T_m}_{j=1}[\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} ] + \tau T_m 
+
+\end{aligned}  \tag{12}</script><h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><h3 id="XGBoost-通用-Objective-Function"><a href="#XGBoost-通用-Objective-Function" class="headerlink" title="XGBoost 通用 Objective Function"></a>XGBoost 通用 Objective Function</h3><script type="math/tex; mode=display">\begin{aligned} 
+\mathcal{\tilde{L}}^{(m)}
+&= \sum^{T_m}_{j=1}[(\sum_{i \in R_{m,j}}g_i) \gamma_{j,m} + \cfrac{1}{2}(\sum_{i \in R_{j,m} }h_i + \lambda)\gamma_{j,m}^2] + \tau T_m 
+\end{aligned}</script><ul>
+<li>$g_i$ 為 first derivative of loss function  related to data sample $x_i$ :  $g_i = \cfrac{d}{d \ F_{m-1}} \ l(y_i, F_{m-1}(x_i))$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$:  $h_i = \cfrac{d^2}{d \ F_{m-1}^2} l(y_i, F_{m-1}(x_i))$</li>
+<li>$T_m$ is the number of leaf in tree $f_m$</li>
+<li>$\tau$ 表對 $T_m$ 的 factor</li>
+<li>$\gamma_{j,m}$ 表 $m$ 步 XGB tree $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+</ul>
+<h3 id="Optimal-Output-of-Leaf-Node-j"><a href="#Optimal-Output-of-Leaf-Node-j" class="headerlink" title="Optimal Output of Leaf Node $j$"></a>Optimal Output of Leaf Node $j$</h3><script type="math/tex; mode=display">\gamma_{j,m}^*=- \cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda}</script><h3 id="Optimal-Value-of-Objective-Function"><a href="#Optimal-Value-of-Objective-Function" class="headerlink" title="Optimal Value of Objective Function"></a>Optimal Value of Objective Function</h3><script type="math/tex; mode=display">\mathcal{\tilde{L}}^{*(m)} = \cfrac{1}{2} \sum^{T_m}_{j=1}[\cfrac{(\sum g_i)^2}{\sum h_i + \lambda} ] + \tau T_m</script><h1 id="Why-does-Approximation-with-Taylor-Expansion-Work"><a href="#Why-does-Approximation-with-Taylor-Expansion-Work" class="headerlink" title="Why does Approximation with Taylor Expansion Work?"></a>Why does Approximation with Taylor Expansion Work?</h1><h2 id="Traditional-Gradient-Decent"><a href="#Traditional-Gradient-Decent" class="headerlink" title="Traditional Gradient Decent"></a>Traditional Gradient Decent</h2><p>當我們在做 gradient decent 時，我們是在嘗試 minimize a cost function  $f(x)$，然後讓 $w^{(i)}$ 往 negative gradient 的方向移動</p>
+<script type="math/tex; mode=display">w^{(i+1)} =w^{(i)} - \nabla f(w^{(i)})</script><p>但 gradient $\nabla f(w^{(i)})$ 本身只告訴我們方向，不會告訴我們真正的 the minimum value，我們得到的是每步後盡量靠近 the minimum value 一點，這使的我們無法保證最終到達極值點</p>
+<p>同樣的表達式下的 gradient boost machine 也相似的的問題</p>
+<script type="math/tex; mode=display">F_m(x) = F_{m-1}(x) + \nu f_{m}(x)</script><p>傳統的 GBDT 透過建一顆 regression tree $f_m(x)$ 和合適的  step size $\nu$ (learning rate)  擬合 negative gradient 往低谷靠近，可以說 GBDT tree $f_m(x)$ 本身就代表 loss function 的 $\text{negative graident}$ 的方向 </p>
+<h2 id="Better-Gradient-Decent-Newton’s-Method"><a href="#Better-Gradient-Decent-Newton’s-Method" class="headerlink" title="Better Gradient Decent: Newton’s Method"></a>Better Gradient Decent: Newton’s Method</h2><p>Newton’s method 是個改良自 gradient decent 的做法。他不只單純考慮了 gradient 方向 (即 first order derivative) ，還多考慮了 second order derivative  即所謂 gradient  的變化趨勢，這他更精準的定位極值的<strong>方向</strong> </p>
+<script type="math/tex; mode=display">w^{(i+1)} = w^{(i)} - \cfrac{\nabla f(w^{(i)})}{\nabla ^2f(w^{(i)})} = w^{(i)} - \cfrac{\nabla f(w^{(i)})}{\text{Hess}f(w^{(i)})}</script><p>XGBoost 引入了 Newton’s method 思維，在建立子樹  $f_m(x)$ 不再單純只是 $\text{negatvie gradient}$ 方向 (即 first order derivative) ，還多考慮了 second order derivative 即 gradient 的變化趨勢，這也是為什麼 XGBoost 全稱叫  <strong>Extreme</strong> Gradient  Boosting</p>
+<script type="math/tex; mode=display">f_m(x_i) = \gamma_{j,m}=- \cfrac{\sum_{i\in R_{j,m}} g_i}{\sum_{i \in R_{j,m}}h_i + \lambda}</script><ul>
+<li>$\gamma_{j,m}$ 表 $m$ 步 XGB tree $f_m$  第 $j$ 個 leaf node 的輸出值</li>
+<li>$g_i$ 為 first derivative of loss function related to data sample $x_i$</li>
+<li>$h_i$ 為 second derivative of loss function related to data sample $x_i$</li>
+</ul>
+<p>而 loss function $l(y_i,\hat{y_i})$ 會因不同應用: regression , classification, rank 而有不同的 objective function，並不一定存在  second order derivative，所以 XGBoost 利用 Taylor expansion 藉由 polynomial function 可以逼近任何 function 的特性，讓 loss function 在 $f_m(x_i)$ 附近存在 second order derivative </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+l(y,\hat{y}^{(m-1)} + f_m(x)) \approx 
+l(y, F_{m-1}(x)) + gf_m(x) + \cfrac{1}{2}hf_m(x)^2
+
+\end{aligned}</script><p>可以說，XGBoos tree 以一種更聰明的方式往 the minimum 移動</p>
+<h2 id="總結-1"><a href="#總結-1" class="headerlink" title="總結"></a>總結</h2><ul>
+<li>一般 GBDT 用 regression tree 擬合 residuals，本質上是往 negative gradient 方向移動</li>
+<li>XGBoost tree $f_m(x)$ 擬合 residuals，同時考慮 gradient 的方向和 gradient 變化趨勢，這讓他朝 optimal value 移動時顯得更加聰明有效<ul>
+<li>gradient 的方向： first order derivative</li>
+<li>gradient 變化趨勢： second order derivative</li>
+</ul>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li>Chen, T., &amp; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 13-17-Augu, 785–794. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/2939672.2939785">https://doi.org/10.1145/2939672.2939785</a></li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=OtD8wVaFm6E">XGBoost Part 1 (of 4): Regression</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ZVFeW798-2I&amp;t=19s">XGBoost Part 3 (of 4): Mathematical Details</a></p>
+<ul>
+<li>Tayler expansion<ul>
+<li>XGBoost Loss function Approximation With Taylor Expansion <a target="_blank" rel="noopener" href="https://stats.stackexchange.com/questions/202858/xgboost-loss-function-approximation-with-taylor-expansion">https://stats.stackexchange.com/questions/202858/xgboost-loss-function-approximation-with-taylor-expansion</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Taylor_series#Approximation_and_convergence">https://en.wikipedia.org/wiki/Taylor_series#Approximation_and_convergence</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Taylor&#39;s_theorem">https://en.wikipedia.org/wiki/Taylor’s_theorem</a></li>
+</ul>
+</li>
+</ul>
+</div><hr style="height:1px;margin:1rem 0"><div class="level is-mobile is-flex"><div class="article-tags is-size-7 is-uppercase"><i class="fas fa-tags has-text-grey"></i> <a class="link-muted" rel="tag" href="/tags/ML/">ML </a></div></div></article></div><div class="card"><article class="card-content article" role="article"><h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal"><a class="has-link-black-ter" href="/XGBoost-for-classification/"><i class="fas fa-angle-double-right"></i>透視 XGBoost(2) 圖解 Classification</a></h1><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-alt"> </i><time dateTime="${date_xml(page.date)}" title="${date_xml(page.date)}">2021-02-16</time></span><span class="level-item is-hidden-mobile"><i class="far fa-calendar-check"> </i><time dateTime="${date_xml(page.updated)}" title="${date_xml(page.updated)}">2021-02-18</time></span><span class="level-item"><a class="link-muted" href="/categories/Machine-Learning/">Machine Learning</a></span><span class="level-item">22 minutes read (About 3260 words)</span></div></div><div class="content"><h1 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h1><ul>
 <li>XGBoost 與  GBDT 相比，同樣都是擬合上一步 $F_{m-1}(x)$ 預測值的 residual 。不同的是 XGBoost 在擬合 residual 時更為聰明有效，他有自己衡量分裂增益 gain 的方式去擬合  residual 建立  XGB tree $f_m(x)$</li>
 </ul>
 <script type="math/tex; mode=display">Gain = Left_{\text{similarity}} + Right_{\text{similarity}}  - Root_{\text{similarity}} \tag{1}</script><ul>
